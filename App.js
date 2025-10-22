@@ -21,5 +21,4 @@ function App() {
         </NavigationContainer>
     );
 }
-willim gay
 export default App;
