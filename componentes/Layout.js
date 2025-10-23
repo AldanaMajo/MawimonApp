@@ -39,8 +39,8 @@ const Footer = () => {
       <FooterButton icon="home" label="Inicio" onPress={() => navigation.navigate('Inicio')} />
       <FooterButton icon="search" label="Buscar" />
       <FooterButton icon="heart" label="Favoritos" />
-      <FooterButtonGame icons="game-controller-outline" label="MiniGame"/>
-     
+     <FooterButtonGame icons="game-controller-outline" label="MiniGame" onPress={() => navigation.navigate('MiniGame')} />
+
     </View>
   );
 };
