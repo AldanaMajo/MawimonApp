@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context'
 
 import Icon from 'react-native-vector-icons/Feather'; 
-const navigation = useNavigation();
+
 // Header
 const Header = ({label}) => (
   <View style={styles.header}>
@@ -24,14 +24,17 @@ const FooterButton = ({ icon, label, onPress }) => (
 );
 
 // Footer
-const Footer = () => (
-  <View style={styles.footer}>
-     <FooterButton icon="home" label="Inicio" onPress={() => navigation.navigate('Inicio')} />
+const Footer = () => {
+  const navigation = useNavigation(); 
+  return (
+    <View style={styles.footer}>
+      <FooterButton icon="home" label="Inicio" onPress={() => navigation.navigate('Inicio')} />
       <FooterButton icon="search" label="Buscar" />
       <FooterButton icon="heart" label="Favoritos" />
       <FooterButton icon="settings" label="Ajustes" />
-  </View>
-);
+    </View>
+  );
+};
 
 
 // Layout
@@ -70,11 +73,11 @@ const styles = StyleSheet.create({
   
   body: {
     flex: 1,
-    justifyContent: 'top', 
-    alignItems: 'left', 
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
     padding: 5, 
   },
- 
+
   footer: {
     height: 80, 
     backgroundColor: '#3384cc', 
@@ -86,9 +89,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  footerLabel: {
-    color: '',
-    fontSize: 14,
-    marginTop: 4,
-  },
+footerLabel: {
+  color: 'white',
+  fontSize: 14,
+  marginTop: 4,
+},
+
 });
