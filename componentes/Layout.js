@@ -3,6 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context'
 
 import { Feather as Icon } from '@expo/vector-icons';
+import { Ionicons as Icons } from '@expo/vector-icons';
 
 // Header
 const Header = ({label}) => (
@@ -19,6 +20,13 @@ const Body = ({ children }) => (
 const FooterButton = ({ icon, label, onPress }) => (
   <TouchableOpacity style={styles.footerButton} onPress={onPress}>
     <Icon name={icon} size={24} color="#FFA500" />
+    
+    <Text style={styles.footerLabel}>{label}</Text>
+  </TouchableOpacity>
+);
+const FooterButtonGame = ({ icons, label, onPress }) => (
+  <TouchableOpacity style={styles.footerButton} onPress={onPress}>
+    <Icons name={icons} size={24} color="#FFA500" />
     <Text style={styles.footerLabel}>{label}</Text>
   </TouchableOpacity>
 );
@@ -31,7 +39,8 @@ const Footer = () => {
       <FooterButton icon="home" label="Inicio" onPress={() => navigation.navigate('Inicio')} />
       <FooterButton icon="search" label="Buscar" />
       <FooterButton icon="heart" label="Favoritos" />
-      <FooterButton icon="settings" label="Ajustes" />
+      <FooterButtonGame icons="game-controller-outline" label="MiniGame"/>
+     
     </View>
   );
 };
