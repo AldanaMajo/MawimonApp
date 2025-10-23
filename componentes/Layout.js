@@ -2,7 +2,7 @@ import { StyleSheet, Text,StatusBar, View, TouchableOpacity  } from 'react-nativ
 import { useNavigation } from '@react-navigation/native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context'
 
-import Icon from 'react-native-vector-icons/Feather'; 
+import { Feather as Icon } from '@expo/vector-icons';
 
 // Header
 const Header = ({label}) => (
