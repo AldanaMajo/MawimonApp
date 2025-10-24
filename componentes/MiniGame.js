@@ -6,29 +6,22 @@ import {
   TouchableOpacity,
   Dimensions,
   Image,
-  ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  SafeAreaView,
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const POKEMON_SPRITES = {
-  caterpie: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png',
-  weedle: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/13.png',
-  wurmple: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/265.png',
+// --- Sprites locales (tu cabeza y cuerpo de Caterpie) ---
+const SNAKE_SPRITES = {
+  cabeza: require('../assets/Cabezaa.png'),
+  cuerpo: require('../assets/Cuerpoo.png'),
 };
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_COLS = 8;
 const GRID_ROWS = 8;
 const GAME_AREA_WIDTH = SCREEN_WIDTH * 0.8;
-const GAME_AREA_HEIGHT = GAME_AREA_WIDTH; // cuadrado
 const CELL_SIZE = GAME_AREA_WIDTH / GRID_COLS;
-
-const INITIAL_SPEED = 250; // velocidad inicial más lenta
+const INITIAL_SPEED = 250;
 const STORAGE_KEY_BEST = '@pokemon_snake_best_score';
 
 const randPos = () => ({
@@ -39,7 +32,6 @@ const positionsEqual = (a, b) => a.x === b.x && a.y === b.y;
 
 export default function MiniGame() {
   const [screen, setScreen] = useState('menu');
-  const [selected, setSelected] = useState('caterpie');
   const [snake, setSnake] = useState([]);
   const [direction, setDirection] = useState('RIGHT');
   const [food, setFood] = useState(randPos());
@@ -48,8 +40,10 @@ export default function MiniGame() {
   const [score, setScore] = useState(0);
   const [best, setBest] = useState(0);
   const [countdown, setCountdown] = useState(null);
+  const [time, setTime] = useState(0);
 
   const intervalRef = useRef(null);
+  const timerRef = useRef(null);
   const dirRef = useRef(direction);
   dirRef.current = direction;
   const insets = useSafeAreaInsets();
@@ -59,178 +53,294 @@ export default function MiniGame() {
       try {
         const v = await AsyncStorage.getItem(STORAGE_KEY_BEST);
         if (v) setBest(parseInt(v, 10));
-      } catch (e) { console.log('Error loading best', e); }
+      } catch (e) {
+        console.log('Error loading best', e);
+      }
     })();
-    return () => clearInterval(intervalRef.current);
+    return () => {
+      clearInterval(intervalRef.current);
+      clearInterval(timerRef.current);
+    };
   }, []);
 
-  useEffect(() => { if (running) startLoop(); else stopLoop(); return () => stopLoop(); }, [running, speed]);
+  useEffect(() => {
+    if (running) startLoop();
+    else stopLoop();
+    return () => stopLoop();
+  }, [running, speed]);
 
-  const startGame = (starterPokemon) => {
-    setSelected(starterPokemon || selected);
-    const startPos = { x: Math.floor(GRID_COLS / 2), y: Math.floor(GRID_ROWS / 2) };
-    setSnake([startPos, { x: startPos.x - 1, y: startPos.y }, { x: startPos.x - 2, y: startPos.y }]);
+  // --- Inicia el juego con Caterpie recto (..)
+  const startGame = () => {
+    const startPos = {
+      x: Math.floor(GRID_COLS / 2),
+      y: Math.floor(GRID_ROWS / 2),
+    };
+    const initialSnake = [
+      { x: startPos.x - 1, y: startPos.y }, // cuerpo
+      { x: startPos.x, y: startPos.y }, // cabeza
+    ];
+
+    setSnake(initialSnake);
     setDirection('RIGHT');
-    setFood(generateFood([startPos]));
+    setFood(generateFood(initialSnake));
     setScore(0);
     setSpeed(INITIAL_SPEED);
+    setTime(0);
     setScreen('game');
     setCountdown(3);
 
     let count = 3;
     const timer = setInterval(() => {
-      count--;
       setCountdown(count);
-      if (count <= 0) { clearInterval(timer); setCountdown(null); setRunning(true); }
+      count--;
+      if (count < 0) {
+        clearInterval(timer);
+        setCountdown(null);
+        setRunning(true);
+        startTimer();
+      }
     }, 1000);
   };
 
-  const gameOver = async () => {
-    setRunning(false);
-    setScreen('gameover');
-    try {
-      if (score > best) { await AsyncStorage.setItem(STORAGE_KEY_BEST, String(score)); setBest(score); }
-    } catch (e) { console.log('Error saving best', e); }
+  const startTimer = () => {
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setTime((t) => t + 1);
+    }, 1000);
   };
 
-  const startLoop = () => { stopLoop(); intervalRef.current = setInterval(() => step(), speed); };
-  const stopLoop = () => { if (intervalRef.current) clearInterval(intervalRef.current); intervalRef.current = null; };
+  const stopTimer = () => clearInterval(timerRef.current);
 
-  const changeDir = (newDir) => { const opposite = { UP: 'DOWN', DOWN: 'UP', LEFT: 'RIGHT', RIGHT: 'LEFT' }; if (opposite[newDir] === dirRef.current) return; setDirection(newDir); };
+  const gameOver = async () => {
+    setRunning(false);
+    stopTimer();
+    setScreen('gameover');
+    try {
+      if (score > best) {
+        await AsyncStorage.setItem(STORAGE_KEY_BEST, String(score));
+        setBest(score);
+      }
+    } catch (e) {
+      console.log('Error saving best', e);
+    }
+  };
+
+  const startLoop = () => {
+    stopLoop();
+    intervalRef.current = setInterval(() => step(), speed);
+  };
+
+  const stopLoop = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = null;
+  };
+
+  const changeDir = (newDir) => {
+    const opposite = {
+      UP: 'DOWN',
+      DOWN: 'UP',
+      LEFT: 'RIGHT',
+      RIGHT: 'LEFT',
+    };
+    if (opposite[newDir] === dirRef.current) return;
+    setDirection(newDir);
+  };
 
   const generateFood = (currentSnake) => {
-    let p = randPos(); let tries = 0;
-    while (currentSnake.some((s) => positionsEqual(s, p)) && tries < 200) { p = randPos(); tries++; }
+    let p = randPos();
+    let tries = 0;
+    while (currentSnake.some((s) => positionsEqual(s, p)) && tries < 200) {
+      p = randPos();
+      tries++;
+    }
     return p;
   };
 
   const step = () => {
     setSnake((old) => {
-      const head = { ...old[0] };
+      const head = { ...old[old.length - 1] };
       const dir = dirRef.current;
-      if (dir === 'UP') head.y -= 1; else if (dir === 'DOWN') head.y += 1;
-      else if (dir === 'LEFT') head.x -= 1; else if (dir === 'RIGHT') head.x += 1;
+      if (dir === 'UP') head.y -= 1;
+      else if (dir === 'DOWN') head.y += 1;
+      else if (dir === 'LEFT') head.x -= 1;
+      else if (dir === 'RIGHT') head.x += 1;
 
-      if (head.x < 0 || head.x >= GRID_COLS || head.y < 0 || head.y >= GRID_ROWS) { gameOver(); return old; }
+      // colisión con paredes
+      if (
+        head.x < 0 ||
+        head.x >= GRID_COLS ||
+        head.y < 0 ||
+        head.y >= GRID_ROWS
+      ) {
+        gameOver();
+        return old;
+      }
 
-      for (let i = 0; i < old.length; i++) if (positionsEqual(head, old[i])) { gameOver(); return old; }
+      // colisión con el cuerpo
+      for (let i = 0; i < old.length; i++)
+        if (positionsEqual(head, old[i])) {
+          gameOver();
+          return old;
+        }
 
-      let newSnake = [head, ...old.slice(0, old.length - 1)];
-      if (positionsEqual(head, food)) { newSnake = [head, ...old]; setFood(generateFood(newSnake)); setScore((s) => s + 1); setSpeed((s) => Math.max(60, s - 5)); }
+      let newSnake = [...old.slice(1), head];
+      if (positionsEqual(head, food)) {
+        newSnake = [...old, head];
+        setFood(generateFood(newSnake));
+        setScore((s) => s + 1);
+        setSpeed((s) => Math.max(60, s - 5));
+      }
 
       return newSnake;
     });
   };
 
-  const renderCell = (x, y) => {
-    const isHead = snake.length > 0 && positionsEqual(snake[0], { x, y });
-    const isBody = snake.some((p, idx) => idx > 0 && positionsEqual(p, { x, y }));
-    const isFood = positionsEqual(food, { x, y });
-
-    if (isHead) return (
-      <View key={`${x}-${y}`} style={[styles.cell, styles.cellHead]}>
-        <Image source={{ uri: POKEMON_SPRITES[selected] }} style={styles.pokemonImage} />
-      </View>
-    );
-    if (isBody) return (
-      <View key={`${x}-${y}`} style={[styles.cell, styles.cellBody]}>
-        <Image source={{ uri: POKEMON_SPRITES[selected] }} style={styles.pokemonImageSmall} />
-      </View>
-    );
-    if (isFood) return (
-      <View key={`${x}-${y}`} style={[styles.cell, styles.cellFood]}>
-        <Text style={{ fontSize: CELL_SIZE * 0.5 }}>🍓</Text>
-      </View>
-    );
-    return <View key={`${x}-${y}`} style={styles.cell} />;
+  const renderSnake = () => {
+    return snake.map((seg, idx) => {
+      const img = idx === snake.length - 1 ? SNAKE_SPRITES.cabeza : SNAKE_SPRITES.cuerpo;
+      return (
+        <Image
+          key={`s-${idx}`}
+          source={img}
+          style={{
+            position: 'absolute',
+            width: CELL_SIZE,
+            height: CELL_SIZE,
+            left: seg.x * CELL_SIZE,
+            top: seg.y * CELL_SIZE,
+            resizeMode: 'contain',
+            zIndex: idx === snake.length - 1 ? 2 : 1,
+          }}
+        />
+      );
+    });
   };
 
-  // -------------------- PANTALLA MENÚ --------------------
+  const renderGrid = () =>
+    Array.from({ length: GRID_ROWS }).map((_, row) => (
+      <View key={`r-${row}`} style={styles.row}>
+        {Array.from({ length: GRID_COLS }).map((__, col) => {
+          const isFood = positionsEqual(food, { x: col, y: row });
+          return (
+            <View key={`c-${col}`} style={styles.cell}>
+              {isFood && <Text style={{ fontSize: CELL_SIZE * 0.5 }}>🍓</Text>}
+            </View>
+          );
+        })}
+      </View>
+    ));
+
+  // --- MENÚ PRINCIPAL ---
   if (screen === 'menu') {
     return (
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
           <Text style={styles.title}>Poké-Snake</Text>
-          <Text style={styles.subtitle}>Elige tu Pokémon</Text>
 
-          <ScrollView
-            horizontal
-            contentContainerStyle={{ alignItems: 'center', paddingHorizontal: 10 }}
-            showsHorizontalScrollIndicator={false}
+          <TouchableOpacity style={styles.button} onPress={startGame}>
+            <Text style={styles.buttonText}>Jugar</Text>
+          </TouchableOpacity>
+
+          {/* Imagen y texto de Caterpie */}
+          <Image
+            source={{
+              uri: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png',
+            }}
+            style={{ width: 120, height: 120, marginTop: 16 }}
+            resizeMode="contain"
+          />
+          <Text
+            style={{
+              fontSize: SCREEN_WIDTH * 0.045,
+              color: '#1b5e20',
+              fontWeight: '600',
+              marginTop: 4,
+            }}
           >
-            {Object.keys(POKEMON_SPRITES).map((k) => (
-              <TouchableOpacity
-                key={k}
-                style={[styles.pokemonCard, selected === k && styles.pokemonCardSelected]}
-                onPress={() => setSelected(k)}
-              >
-                <Image source={{ uri: POKEMON_SPRITES[k] }} style={styles.pokemonSelectImage} />
-                <Text style={styles.pokemonName}>{k}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+            ¡Juega con Caterpie!
+          </Text>
 
-          {/* Texto de puntaje máximo y botón Jugar más arriba */}
-          <View style={{ marginTop: 30, alignItems: 'center' }}>
-            <Text style={{ fontSize: SCREEN_WIDTH * 0.045, marginBottom: 12 }}>Puntuación máxima: {best}</Text>
-            <TouchableOpacity style={styles.button} onPress={() => startGame(selected)}>
-              <Text style={styles.buttonText}>Jugar</Text>
-            </TouchableOpacity>
-          </View>
-
+          <Text style={{ marginTop: 12 }}>Mejor puntaje: {best}</Text>
         </SafeAreaView>
       </SafeAreaProvider>
     );
   }
 
-  // -------------------- PANTALLA JUEGO --------------------
+  // --- PANTALLA DEL JUEGO ---
   if (screen === 'game') {
     return (
       <SafeAreaProvider>
-        <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom + 10 }]}>
-          <ScrollView contentContainerStyle={{ alignItems: 'center', paddingBottom: 20 }}>
-            <Text style={styles.header}>Puntaje: {score} Mejor: {best}</Text>
-
-            <View style={styles.gameArea}>
-              {Array.from({ length: GRID_ROWS }).map((_, row) => (
-                <View key={`r-${row}`} style={styles.row}>
-                  {Array.from({ length: GRID_COLS }).map((__, col) => renderCell(col, row))}
-                </View>
-              ))}
-              {countdown !== null && countdown > 0 && (
-                <View style={styles.countdownOverlay}>
-                  <Text style={styles.countdownText}>{countdown === 0 ? '¡GO!' : countdown}</Text>
-                </View>
-              )}
-            </View>
-
-            {/* 🎮 D-Pad */}
-            <View style={styles.dpadBase}>
-              <View style={styles.dpadCross}>
-                <TouchableOpacity style={[styles.dpadButton, styles.dpadUp]} onPress={() => changeDir('UP')}><Text style={styles.dpadArrow}>▲</Text></TouchableOpacity>
-                <TouchableOpacity style={[styles.dpadButton, styles.dpadLeft]} onPress={() => changeDir('LEFT')}><Text style={styles.dpadArrow}>◀</Text></TouchableOpacity>
-                <TouchableOpacity style={[styles.dpadButton, styles.dpadRight]} onPress={() => changeDir('RIGHT')}><Text style={styles.dpadArrow}>▶</Text></TouchableOpacity>
-                <TouchableOpacity style={[styles.dpadButton, styles.dpadDown]} onPress={() => changeDir('DOWN')}><Text style={styles.dpadArrow}>▼</Text></TouchableOpacity>
-                <View style={styles.dpadCenter} />
+        <SafeAreaView
+          style={[styles.container, { paddingBottom: insets.bottom + 10 }]}
+        >
+          <Text style={styles.header}>
+            Puntaje: {score} Tiempo: {time}s Mejor: {best}
+          </Text>
+          <View style={styles.gameArea}>
+            {renderGrid()}
+            {renderSnake()}
+            {countdown !== null && (
+              <View style={styles.countdownOverlay}>
+                <Text style={styles.countdownText}>
+                  {countdown === 0 ? '¡GO!' : countdown}
+                </Text>
               </View>
-            </View>
+            )}
+          </View>
 
-          </ScrollView>
+          {/* D-Pad */}
+          <View style={styles.dpadBase}>
+            <View style={styles.dpadCross}>
+              <TouchableOpacity
+                style={[styles.dpadButton, styles.dpadUp]}
+                onPress={() => changeDir('UP')}
+              >
+                <Text style={styles.dpadArrow}>▲</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.dpadButton, styles.dpadLeft]}
+                onPress={() => changeDir('LEFT')}
+              >
+                <Text style={styles.dpadArrow}>◀</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.dpadButton, styles.dpadRight]}
+                onPress={() => changeDir('RIGHT')}
+              >
+                <Text style={styles.dpadArrow}>▶</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.dpadButton, styles.dpadDown]}
+                onPress={() => changeDir('DOWN')}
+              >
+                <Text style={styles.dpadArrow}>▼</Text>
+              </TouchableOpacity>
+              <View style={styles.dpadCenter} />
+            </View>
+          </View>
         </SafeAreaView>
       </SafeAreaProvider>
     );
   }
 
-  // -------------------- PANTALLA GAMEOVER --------------------
+  // --- GAME OVER ---
   if (screen === 'gameover') {
     return (
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
           <Text style={styles.title}>¡Game Over!</Text>
           <Text style={styles.subtitle}>Puntaje: {score}</Text>
+          <Text style={styles.subtitle}>Tiempo: {time}s</Text>
           <Text style={styles.subtitle}>Mejor: {best}</Text>
-          <TouchableOpacity style={styles.button} onPress={() => startGame(selected)}><Text style={styles.buttonText}>Jugar otra vez</Text></TouchableOpacity>
-          <TouchableOpacity style={[styles.button, { backgroundColor: '#888' }]} onPress={() => setScreen('menu')}><Text style={styles.buttonText}>Volver al menú</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={startGame}>
+            <Text style={styles.buttonText}>Jugar otra vez</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: '#888' }]}
+            onPress={() => setScreen('menu')}
+          >
+            <Text style={styles.buttonText}>Volver al menú</Text>
+          </TouchableOpacity>
         </SafeAreaView>
       </SafeAreaProvider>
     );
@@ -239,34 +349,94 @@ export default function MiniGame() {
   return null;
 }
 
-// -------------------- ESTILOS --------------------
+// --- ESTILOS ---
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f0f4f3', alignItems: 'center', paddingTop: '5%' },
+  container: {
+    flex: 1,
+    backgroundColor: '#f0f4f3',
+    alignItems: 'center',
+    paddingTop: '5%',
+  },
   title: { fontSize: SCREEN_WIDTH * 0.08, fontWeight: '700', marginBottom: 8 },
   subtitle: { fontSize: SCREEN_WIDTH * 0.04, color: '#444', marginBottom: 12 },
-  pokemonCard: { width: SCREEN_WIDTH * 0.25, height: SCREEN_WIDTH * 0.3, backgroundColor: '#fff', borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginHorizontal: 6, borderWidth: 1, borderColor: '#ddd', padding: 6 },
-  pokemonCardSelected: { borderColor: '#4caf50', shadowColor: '#4caf50', shadowOpacity: 0.3, shadowRadius: 6 },
-  pokemonSelectImage: { width: SCREEN_WIDTH * 0.15, height: SCREEN_WIDTH * 0.15, marginBottom: 6 },
-  pokemonName: { textTransform: 'capitalize' },
-  button: { marginTop: 12, backgroundColor: '#3b82f6', paddingVertical: 12, paddingHorizontal: 24, borderRadius: 8 },
+  button: {
+    marginTop: 12,
+    backgroundColor: '#3b82f6',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
   buttonText: { color: '#fff', fontWeight: '600' },
-  header: { fontSize: SCREEN_WIDTH * 0.045, marginBottom: 8 },
-  gameArea: { width: GAME_AREA_WIDTH, height: GAME_AREA_HEIGHT, borderWidth: 2, borderColor: '#2e7d32', backgroundColor: '#a5d6a7', overflow: 'hidden', borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  countdownOverlay: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.6)' },
-  countdownText: { fontSize: SCREEN_WIDTH * 0.15, fontWeight: '800', color: '#1b5e20' },
+  header: { fontSize: SCREEN_WIDTH * 0.04, marginBottom: 8, textAlign: 'center' },
+  gameArea: {
+    width: GAME_AREA_WIDTH,
+    height: GAME_AREA_WIDTH,
+    borderWidth: 2,
+    borderColor: '#2e7d32',
+    backgroundColor: '#a5d6a7',
+    overflow: 'hidden',
+    borderRadius: 8,
+  },
   row: { flexDirection: 'row' },
-  cell: { width: CELL_SIZE, height: CELL_SIZE, borderWidth: 0.5, borderColor: '#4caf50', alignItems: 'center', justifyContent: 'center', backgroundColor: '#81c784' },
-  cellHead: { backgroundColor: '#2e7d32' },
-  cellBody: { backgroundColor: '#388e3c' },
-  cellFood: { backgroundColor: '#ffeb3b' },
-  pokemonImage: { width: CELL_SIZE * 0.8, height: CELL_SIZE * 0.8, resizeMode: 'contain' },
-  pokemonImageSmall: { width: CELL_SIZE * 0.6, height: CELL_SIZE * 0.6, resizeMode: 'contain', opacity: 0.9 },
-
-  // D-Pad
-  dpadBase: { backgroundColor: '#cfcfcf', borderRadius: 100, width: SCREEN_WIDTH * 0.4, height: SCREEN_WIDTH * 0.4, marginTop: 16, alignItems: 'center', justifyContent: 'center' },
-  dpadCross: { position: 'relative', width: '90%', height: '90%', alignItems: 'center', justifyContent: 'center' },
-  dpadButton: { position: 'absolute', width: SCREEN_WIDTH * 0.13, height: SCREEN_WIDTH * 0.13, backgroundColor: '#222', borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  dpadUp: { top: 0 }, dpadDown: { bottom: 0 }, dpadLeft: { left: 0 }, dpadRight: { right: 0 },
-  dpadCenter: { width: SCREEN_WIDTH * 0.18, height: SCREEN_WIDTH * 0.18, backgroundColor: '#444', borderRadius: SCREEN_WIDTH * 0.09 },
+  cell: {
+    width: CELL_SIZE,
+    height: CELL_SIZE,
+    borderWidth: 0.5,
+    borderColor: '#4caf50',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#81c784',
+  },
+  countdownOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+  countdownText: {
+    fontSize: SCREEN_WIDTH * 0.15,
+    fontWeight: '800',
+    color: '#1b5e20',
+  },
+  dpadBase: {
+    backgroundColor: '#cfcfcf',
+    borderRadius: 100,
+    width: SCREEN_WIDTH * 0.4,
+    height: SCREEN_WIDTH * 0.4,
+    marginTop: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dpadCross: {
+    position: 'relative',
+    width: '90%',
+    height: '90%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dpadButton: {
+    position: 'absolute',
+    width: SCREEN_WIDTH * 0.13,
+    height: SCREEN_WIDTH * 0.13,
+    backgroundColor: '#222',
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dpadUp: { top: 0 },
+  dpadDown: { bottom: 0 },
+  dpadLeft: { left: 0 },
+  dpadRight: { right: 0 },
+  dpadCenter: {
+    width: SCREEN_WIDTH * 0.18,
+    height: SCREEN_WIDTH * 0.18,
+    backgroundColor: '#444',
+    borderRadius: SCREEN_WIDTH * 0.09,
+  },
   dpadArrow: { fontSize: SCREEN_WIDTH * 0.05, color: '#fff', fontWeight: 'bold' },
 });
