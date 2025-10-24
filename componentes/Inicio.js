@@ -4,7 +4,7 @@ import Layout from './Layout';
 
 function Inicio({ navigation }) {
   return (
-    <Layout header="Jefes de Incursiones">
+    <Layout header="Jefes de Incursiones" navigation={navigation}>
       <Text>Bienvenido a la pantalla de Jefes de Incursiones</Text>
     </Layout>
   );

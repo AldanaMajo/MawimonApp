@@ -3,7 +3,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 //pantallas
 import Inicio from './componentes/Inicio';
 import MiniGame from './componentes/MiniGame';
-
+import Buscar from './componentes/Buscar';
+import Favoritos from './componentes/Favoritos';
+import Layout from './componentes/Layout';
 
 const Stack = createNativeStackNavigator();
 
@@ -16,6 +18,14 @@ function App() {
           component={Inicio}
           options={{ title: 'Inicio' }}
         />
+        <Stack.Screen 
+        name="Buscar" component={Buscar}
+        options={{title:'Buscar'}}
+         />
+         <Stack.Screen 
+        name="Favoritos" component={Favoritos}
+        options={{title:'Favoritos'}}
+         />
         <Stack.Screen 
         name="MiniGame" component={MiniGame}
         options={{title:'MiniGame'}}

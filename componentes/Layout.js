@@ -32,35 +32,33 @@ const FooterButtonGame = ({ icons, label, onPress }) => (
 );
 
 // Footer
-const Footer = () => {
-  const navigation = useNavigation(); 
+const Footer = ({ navigation }) => {
   return (
     <View style={styles.footer}>
       <FooterButton icon="home" label="Inicio" onPress={() => navigation.navigate('Inicio')} />
-      <FooterButton icon="search" label="Buscar" />
-      <FooterButton icon="heart" label="Favoritos" />
-     <FooterButtonGame icons="game-controller-outline" label="MiniGame" onPress={() => navigation.navigate('MiniGame')} />
-
+      <FooterButton icon="search" label="Buscar" onPress={() => navigation.navigate('Buscar')} />
+      <FooterButton icon="heart" label="Favoritos" onPress={() => navigation.navigate('Favoritos')} />
+      <FooterButtonGame icons="game-controller-outline" label="MiniGame" onPress={() => navigation.navigate('MiniGame')} />
     </View>
   );
 };
 
 
+
 // Layout
-export default function Layout({header,children}) {
+export default function Layout({ header, children, navigation }) {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="auto"  />
         <Header label={header} />
-        <Body>
-         {children}
-        </Body>
-        <Footer />
+        <Body>{children}</Body>
+        <Footer navigation={navigation} />
       </SafeAreaView>
     </SafeAreaProvider>
   );
 }
+
+
 
 const styles = StyleSheet.create({
  
