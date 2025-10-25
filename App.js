@@ -5,6 +5,7 @@ import Inicio from './componentes/Inicio';
 import MiniGame from './componentes/MiniGame';
 import Buscar from './componentes/Buscar';
 import Favoritos from './componentes/Favoritos';
+import PokemonDetail from './componentes/PokemonDetail'; // nueva pantalla
 import Layout from './componentes/Layout';
 
 const Stack = createNativeStackNavigator();
@@ -22,6 +23,11 @@ function App() {
         name="Buscar" component={Buscar}
         options={{title:'Buscar'}}
          />
+         <Stack.Screen 
+          name="PokemonDetail" 
+          component={PokemonDetail}
+          options={({ route }) => ({ title: route.params.pokemon.name.toUpperCase() })}
+        />
          <Stack.Screen 
         name="Favoritos" component={Favoritos}
         options={{title:'Favoritos'}}
