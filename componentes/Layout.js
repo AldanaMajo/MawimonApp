@@ -1,10 +1,20 @@
-import { StyleSheet, Text,StatusBar, View, TouchableOpacity  } from 'react-native';
+import { StyleSheet, Text,StatusBar, View, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context'
 
 import { Feather as Icon } from '@expo/vector-icons';
 import { Ionicons as Icons } from '@expo/vector-icons';
 
+// HeaderNav
+const HeaderNav = () => (
+  <View style={styles.headerNav}>
+   
+    <TouchableOpacity style={styles.iconoU}>
+    <Icons name="person-circle-outline" size={40} color="#000" />
+    </TouchableOpacity>
+
+  </View>
+);
 // Header
 const Header = ({label}) => (
   <View style={styles.header}>
@@ -36,20 +46,19 @@ const Footer = ({ navigation }) => {
   return (
     <View style={styles.footer}>
       <FooterButton icon="home" label="Inicio" onPress={() => navigation.navigate('Inicio')} />
-      <FooterButton icon="search" label="Buscar" onPress={() => navigation.navigate('Buscar')} />
+      <FooterButton icon="search" label="Pokédex" onPress={() => navigation.navigate('Buscar')} />
       <FooterButton icon="heart" label="Favoritos" onPress={() => navigation.navigate('Favoritos')} />
       <FooterButtonGame icons="game-controller-outline" label="MiniGame" onPress={() => navigation.navigate('MiniGame')} />
     </View>
   );
 };
 
-
-
 // Layout
 export default function Layout({ header, children, navigation }) {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
+      <HeaderNav/>
         <Header label={header} />
         <Body>{children}</Body>
         <Footer navigation={navigation} />
@@ -57,8 +66,6 @@ export default function Layout({ header, children, navigation }) {
     </SafeAreaProvider>
   );
 }
-
-
 
 const styles = StyleSheet.create({
  
@@ -71,6 +78,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     alignItems: 'center',   
   },
+
+  headerNav: {
+    height: 60,
+    backgroundColor: '#a3a2a2',
+    flexDirection: 'row',       
+    justifyContent: 'flex-end',  
+    alignItems: 'center', 
+    paddingHorizontal: 15,
+},
+
+iconoU: {
+  justifyContent: 'center',
+  alignItems: 'center',
+},
 
   headerText: {
     color: 'black',

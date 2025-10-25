@@ -1,5 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context'
 //pantallas
 import Inicio from './componentes/Inicio';
 import MiniGame from './componentes/MiniGame';
@@ -12,16 +13,17 @@ const Stack = createNativeStackNavigator();
 
 function App() {
   return (
+    <SafeAreaProvider>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Inicio">
         <Stack.Screen 
           name="Inicio"
           component={Inicio}
-          options={{ title: 'Inicio' }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen 
         name="Buscar" component={Buscar}
-        options={{title:'Buscar'}}
+        options={{ headerShown: false }}
          />
          <Stack.Screen 
           name="PokemonDetail" 
@@ -30,14 +32,15 @@ function App() {
         />
          <Stack.Screen 
         name="Favoritos" component={Favoritos}
-        options={{title:'Favoritos'}}
+        options={{ headerShown: false }}
          />
         <Stack.Screen 
         name="MiniGame" component={MiniGame}
         options={{title:'MiniGame'}}
          />
       </Stack.Navigator>
-    </NavigationContainer>
+     </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 
