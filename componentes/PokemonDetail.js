@@ -26,7 +26,7 @@ export default function PokemonDetail({ route }) {
     }).start();
   }, []);
 
-  // 🔥 Obtener debilidades
+  // Cargar debilidades
   useEffect(() => {
     const fetchWeaknesses = async () => {
       try {
@@ -103,7 +103,7 @@ export default function PokemonDetail({ route }) {
         <Text style={styles.infoText}>Altura: {pokemon.height / 10} m</Text>
       </View>
 
-      {/* 💥 Debilidades */}
+ 
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Debilidades</Text>
         {loadingWeaknesses ? (

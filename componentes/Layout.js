@@ -96,6 +96,7 @@ iconoU: {
   headerText: {
     color: 'black',
     fontSize: 24, 
+    fontFamily: 'TituloP',
   },
   
   body: {
@@ -118,8 +119,9 @@ iconoU: {
   },
 footerLabel: {
   color: 'white',
-  fontSize: 14,
+  fontSize: 16,
   marginTop: 4,
+  fontFamily: 'TituloP',
 },
 
 });
