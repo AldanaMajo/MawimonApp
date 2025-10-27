@@ -4,6 +4,7 @@ import { View, Text, FlatList,Image,TouchableOpacity,StyleSheet,ActivityIndicato
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import Layout from './Layout';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -61,27 +62,26 @@ export default function Favorito({ navigation }) {
 
   if (loading) {
     return (
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.loadingContainer}>
+          <Layout header="Favoritos" navigation={navigation} >
           <ActivityIndicator size="large" color="#666" />
-        </SafeAreaView>
-      </SafeAreaProvider>
+          <Text>Cargando favoritos...</Text>
+          </Layout>
     );
   }
 
   if (!favoritos.length) {
     return (
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No tienes Pokémon favoritos aún 😢</Text>
-        </SafeAreaView>
-      </SafeAreaProvider>
+
+          <Layout header="Favoritos" navigation={navigation} >
+          <Text style={styles.emptyText}>No tienes Pokémon favoritos aún :(</Text>
+          </Layout>
+
     );
   }
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1 }}>
+    <Layout header="Favoritos" navigation={navigation} >
+      
         {/* Modal de carga */}
         <Modal visible={loadingPokemon} transparent animationType="fade">
           <View style={styles.modalContainer}>
@@ -126,8 +126,8 @@ export default function Favorito({ navigation }) {
             );
           }}
         />
-      </SafeAreaView>
-    </SafeAreaProvider>
+    
+    </Layout>
   );
 }
 

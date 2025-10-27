@@ -15,15 +15,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { Ionicons as Icons } from '@expo/vector-icons';
 import Layout from './Layout';
 
-const HeaderNav = () => (
-  <View style={styles.headerNav}>
-   
-    <TouchableOpacity style={styles.iconoU}>
-    <Icons name="person-circle-outline" size={40} color="#000" />
-    </TouchableOpacity>
 
-  </View>
-);
 
 function Buscar({ navigation }) {
   const [pokemon, setPokemon] = useState([]);
@@ -91,10 +83,8 @@ function Buscar({ navigation }) {
 
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
-        <StatusBar style="auto" />
-        <HeaderNav/>
+    
+       <Layout header="Pokédex" navigation={navigation} >
         <View style={styles.searchContainer}>
       <TextInput
         style={styles.input}
@@ -128,8 +118,8 @@ function Buscar({ navigation }) {
             ) : null
           }
         />
-      </SafeAreaView>
-    </SafeAreaProvider>
+      </Layout>
+    
   );
 }
 

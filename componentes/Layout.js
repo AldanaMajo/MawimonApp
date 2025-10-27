@@ -23,7 +23,7 @@ const Header = ({label}) => (
 );
 // Body 
 const Body = ({ children }) => (
-  <View style={styles.body}>
+  <View style={[styles.body, { flex: 1, width: '100%' }]}>
     {children}
   </View>
 );
@@ -99,12 +99,15 @@ iconoU: {
     fontFamily: 'TituloP',
   },
   
-  body: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    padding: 5, 
-  },
+body: {
+  flex: 1,
+  justifyContent: 'flex-start',
+  alignItems: 'stretch', 
+  width: '100%',
+  backgroundColor: '#f5f5f5',
+},
+
+
 
   footer: {
     height: 80, 
