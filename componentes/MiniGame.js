@@ -10,7 +10,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// --- Sprites locales (tu cabeza y cuerpo de Caterpie) ---
+// --- Sprites locales (cabeza y cuerpo de Caterpie) ---
 const SNAKE_SPRITES = {
   cabeza: require('../assets/Cabezaa.png'),
   cuerpo: require('../assets/Cuerpoo.png'),
@@ -69,15 +69,11 @@ export default function MiniGame() {
     return () => stopLoop();
   }, [running, speed]);
 
-  // --- Inicia el juego con Caterpie recto (..)
   const startGame = () => {
-    const startPos = {
-      x: Math.floor(GRID_COLS / 2),
-      y: Math.floor(GRID_ROWS / 2),
-    };
+    const startPos = { x: Math.floor(GRID_COLS / 2), y: Math.floor(GRID_ROWS / 2) };
     const initialSnake = [
-      { x: startPos.x - 1, y: startPos.y }, // cuerpo
-      { x: startPos.x, y: startPos.y }, // cabeza
+      { x: startPos.x - 1, y: startPos.y },
+      { x: startPos.x, y: startPos.y },
     ];
 
     setSnake(initialSnake);
@@ -104,9 +100,7 @@ export default function MiniGame() {
 
   const startTimer = () => {
     clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setTime((t) => t + 1);
-    }, 1000);
+    timerRef.current = setInterval(() => setTime(t => t + 1), 1000);
   };
 
   const stopTimer = () => clearInterval(timerRef.current);
@@ -136,12 +130,7 @@ export default function MiniGame() {
   };
 
   const changeDir = (newDir) => {
-    const opposite = {
-      UP: 'DOWN',
-      DOWN: 'UP',
-      LEFT: 'RIGHT',
-      RIGHT: 'LEFT',
-    };
+    const opposite = { UP: 'DOWN', DOWN: 'UP', LEFT: 'RIGHT', RIGHT: 'LEFT' };
     if (opposite[newDir] === dirRef.current) return;
     setDirection(newDir);
   };
@@ -149,7 +138,7 @@ export default function MiniGame() {
   const generateFood = (currentSnake) => {
     let p = randPos();
     let tries = 0;
-    while (currentSnake.some((s) => positionsEqual(s, p)) && tries < 200) {
+    while (currentSnake.some(s => positionsEqual(s, p)) && tries < 200) {
       p = randPos();
       tries++;
     }
@@ -157,7 +146,7 @@ export default function MiniGame() {
   };
 
   const step = () => {
-    setSnake((old) => {
+    setSnake(old => {
       const head = { ...old[old.length - 1] };
       const dir = dirRef.current;
       if (dir === 'UP') head.y -= 1;
@@ -165,18 +154,11 @@ export default function MiniGame() {
       else if (dir === 'LEFT') head.x -= 1;
       else if (dir === 'RIGHT') head.x += 1;
 
-      // colisión con paredes
-      if (
-        head.x < 0 ||
-        head.x >= GRID_COLS ||
-        head.y < 0 ||
-        head.y >= GRID_ROWS
-      ) {
+      if (head.x < 0 || head.x >= GRID_COLS || head.y < 0 || head.y >= GRID_ROWS) {
         gameOver();
         return old;
       }
 
-      // colisión con el cuerpo
       for (let i = 0; i < old.length; i++)
         if (positionsEqual(head, old[i])) {
           gameOver();
@@ -187,92 +169,68 @@ export default function MiniGame() {
       if (positionsEqual(head, food)) {
         newSnake = [...old, head];
         setFood(generateFood(newSnake));
-        setScore((s) => s + 1);
-        setSpeed((s) => Math.max(60, s - 5));
+        setScore(s => s + 1);
+        setSpeed(s => Math.max(60, s - 5));
       }
 
       return newSnake;
     });
   };
 
-  const renderSnake = () => {
-    return snake.map((seg, idx) => {
-      const img = idx === snake.length - 1 ? SNAKE_SPRITES.cabeza : SNAKE_SPRITES.cuerpo;
-      return (
-        <Image
-          key={`s-${idx}`}
-          source={img}
-          style={{
-            position: 'absolute',
-            width: CELL_SIZE,
-            height: CELL_SIZE,
-            left: seg.x * CELL_SIZE,
-            top: seg.y * CELL_SIZE,
-            resizeMode: 'contain',
-            zIndex: idx === snake.length - 1 ? 2 : 1,
-          }}
-        />
-      );
-    });
-  };
+  const renderSnake = () =>
+    snake.map((seg, idx) => (
+      <Image
+        key={`s-${idx}`}
+        source={idx === snake.length - 1 ? SNAKE_SPRITES.cabeza : SNAKE_SPRITES.cuerpo}
+        style={{
+          position: 'absolute',
+          width: CELL_SIZE,
+          height: CELL_SIZE,
+          left: seg.x * CELL_SIZE,
+          top: seg.y * CELL_SIZE,
+          resizeMode: 'contain',
+          zIndex: idx === snake.length - 1 ? 2 : 1,
+        }}
+      />
+    ));
 
   const renderGrid = () =>
     Array.from({ length: GRID_ROWS }).map((_, row) => (
       <View key={`r-${row}`} style={styles.row}>
-        {Array.from({ length: GRID_COLS }).map((__, col) => {
-          const isFood = positionsEqual(food, { x: col, y: row });
-          return (
-            <View key={`c-${col}`} style={styles.cell}>
-              {isFood && <Text style={{ fontSize: CELL_SIZE * 0.5 }}>🍓</Text>}
-            </View>
-          );
-        })}
+        {Array.from({ length: GRID_COLS }).map((__, col) => (
+          <View key={`c-${col}`} style={styles.cell}>
+            {positionsEqual(food, { x: col, y: row }) && (
+              <Text style={{ fontSize: CELL_SIZE * 0.5 }}>🍓</Text>
+            )}
+          </View>
+        ))}
       </View>
     ));
 
-  // --- MENÚ PRINCIPAL ---
   if (screen === 'menu') {
     return (
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
           <Text style={styles.title}>Poké-Snake</Text>
-
           <TouchableOpacity style={styles.button} onPress={startGame}>
             <Text style={styles.buttonText}>Jugar</Text>
           </TouchableOpacity>
-
-          {/* Imagen y texto de Caterpie */}
           <Image
-            source={{
-              uri: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png',
-            }}
+            source={{ uri: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png' }}
             style={{ width: 120, height: 120, marginTop: 16 }}
             resizeMode="contain"
           />
-          <Text
-            style={{
-              fontSize: SCREEN_WIDTH * 0.045,
-              color: '#1b5e20',
-              fontWeight: '600',
-              marginTop: 4,
-            }}
-          >
-            ¡Juega con Caterpie!
-          </Text>
-
-          <Text style={{ marginTop: 12 }}>Mejor puntaje: {best}</Text>
+          <Text style={styles.subtitle}>¡Juega con Caterpie!</Text>
+          <Text style={styles.subtitle}>Mejor puntaje: {best}</Text>
         </SafeAreaView>
       </SafeAreaProvider>
     );
   }
 
-  // --- PANTALLA DEL JUEGO ---
   if (screen === 'game') {
     return (
       <SafeAreaProvider>
-        <SafeAreaView
-          style={[styles.container, { paddingBottom: insets.bottom + 10 }]}
-        >
+        <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom + 10 }]}>
           <Text style={styles.header}>
             Puntaje: {score} Tiempo: {time}s Mejor: {best}
           </Text>
@@ -287,32 +245,18 @@ export default function MiniGame() {
               </View>
             )}
           </View>
-
-          {/* D-Pad */}
           <View style={styles.dpadBase}>
             <View style={styles.dpadCross}>
-              <TouchableOpacity
-                style={[styles.dpadButton, styles.dpadUp]}
-                onPress={() => changeDir('UP')}
-              >
+              <TouchableOpacity style={[styles.dpadButton, styles.dpadUp]} onPress={() => changeDir('UP')}>
                 <Text style={styles.dpadArrow}>▲</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.dpadButton, styles.dpadLeft]}
-                onPress={() => changeDir('LEFT')}
-              >
+              <TouchableOpacity style={[styles.dpadButton, styles.dpadLeft]} onPress={() => changeDir('LEFT')}>
                 <Text style={styles.dpadArrow}>◀</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.dpadButton, styles.dpadRight]}
-                onPress={() => changeDir('RIGHT')}
-              >
+              <TouchableOpacity style={[styles.dpadButton, styles.dpadRight]} onPress={() => changeDir('RIGHT')}>
                 <Text style={styles.dpadArrow}>▶</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.dpadButton, styles.dpadDown]}
-                onPress={() => changeDir('DOWN')}
-              >
+              <TouchableOpacity style={[styles.dpadButton, styles.dpadDown]} onPress={() => changeDir('DOWN')}>
                 <Text style={styles.dpadArrow}>▼</Text>
               </TouchableOpacity>
               <View style={styles.dpadCenter} />
@@ -323,7 +267,6 @@ export default function MiniGame() {
     );
   }
 
-  // --- GAME OVER ---
   if (screen === 'gameover') {
     return (
       <SafeAreaProvider>
@@ -335,10 +278,7 @@ export default function MiniGame() {
           <TouchableOpacity style={styles.button} onPress={startGame}>
             <Text style={styles.buttonText}>Jugar otra vez</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: '#888' }]}
-            onPress={() => setScreen('menu')}
-          >
+          <TouchableOpacity style={[styles.button, { backgroundColor: '#888' }]} onPress={() => setScreen('menu')}>
             <Text style={styles.buttonText}>Volver al menú</Text>
           </TouchableOpacity>
         </SafeAreaView>
@@ -349,7 +289,6 @@ export default function MiniGame() {
   return null;
 }
 
-// --- ESTILOS ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -358,7 +297,7 @@ const styles = StyleSheet.create({
     paddingTop: '5%',
   },
   title: { fontSize: SCREEN_WIDTH * 0.08, fontWeight: '700', marginBottom: 8 },
-  subtitle: { fontSize: SCREEN_WIDTH * 0.04, color: '#444', marginBottom: 12 },
+  subtitle: { fontSize: SCREEN_WIDTH * 0.045, color: '#444', marginBottom: 12 },
   button: {
     marginTop: 12,
     backgroundColor: '#3b82f6',
@@ -367,7 +306,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   buttonText: { color: '#fff', fontWeight: '600' },
-  header: { fontSize: SCREEN_WIDTH * 0.04, marginBottom: 8, textAlign: 'center' },
+  header: { fontSize: SCREEN_WIDTH * 0.045, marginBottom: 8, textAlign: 'center' },
   gameArea: {
     width: GAME_AREA_WIDTH,
     height: GAME_AREA_WIDTH,
