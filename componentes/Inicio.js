@@ -4,7 +4,7 @@ import Layout from './Layout';
 
 const PoGoApi = 'https://pogoapi.net/api/v1/raid_bosses.json';
 
-// 🔹 Componente separado para cada ítem de la lista
+// Componentes
 function IncursionCard({ item, navigation }) {
   const [pokemonData, setPokemonData] = useState(null);
 
@@ -45,7 +45,7 @@ function IncursionCard({ item, navigation }) {
           <Text style={styles.nombre}>{item.name}</Text>
           <Text>Forma: {item.form || "Normal"}</Text>
           <Text>CP Máx: {item.max_unboosted_cp || "N/A"}</Text>
-          <Text>Shiny: {item.possible_shiny ? "Sí ✨" : "No"}</Text>
+          <Text>Shiny: {item.possible_shiny ? "Sí " : "No"}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -113,28 +113,54 @@ function Inicio({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  titulo: { fontSize: 20, fontWeight: "bold", marginBottom: 10 },
-  filtros: { flexDirection: "row", justifyContent: "space-around", marginVertical: 10 },
-  boton: { padding: 10, backgroundColor: "#ddd", borderRadius: 8 },
-  botonActivo: { backgroundColor: "#4CAF50" },
-  textoBoton: { color: "#000", fontWeight: "bold" },
-  contenedor: { flex: 1, padding: 16 },
-  card: { padding: 12, marginVertical: 8, borderWidth: 1, borderColor: "#ccc", borderRadius: 10 },
-  nombre: { fontSize: 16, fontWeight: "bold" },
+  titulo: { 
+    fontSize: 20, 
+    fontWeight: "bold", 
+    marginBottom: 10 
+  },
+  filtros: { 
+    flexDirection: "row", 
+    justifyContent: "space-around", 
+    marginVertical: 10 
+  },
+  boton: { 
+    padding: 10, 
+    backgroundColor: "#ddd", 
+    borderRadius: 8 
+  },
+  botonActivo: { 
+    backgroundColor: "#4CAF50" 
+  },
+  textoBoton: { 
+    color: "#000", 
+    fontWeight: "bold" 
+  },
+  contenedor: { 
+    flex: 1, 
+    padding: 16 
+  },
+  card: { 
+    padding: 12, 
+    margin: 15, 
+    borderWidth: 1, 
+    borderColor: "#ccc", 
+    borderRadius: 10 
+  },
+  nombre: { 
+    fontSize: 16, 
+    fontWeight: "bold" 
+  },
   cardContent: {
-      flex: 1,
-    margin: 8,
-    borderRadius: 16,
-    padding: 12,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 6,
-    elevation: 5,
-    position: 'relative',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 12,
+    margin: 2,
     },
-  imagen: { width: 80, height: 80, marginRight: 10 },
+  imagen: { 
+    width: 80, 
+    height: 80, 
+    marginRight: 10 
+  },
 });
 
 export default Inicio;

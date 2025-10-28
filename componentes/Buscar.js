@@ -98,7 +98,7 @@ function Buscar({ navigation }) {
       <TouchableOpacity style={styles.iconContainer} onPress={handleSearch}>
         <Icon name="search" size={22} color="#092891ff" />
       </TouchableOpacity>
-    </View>
+        </View>
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
