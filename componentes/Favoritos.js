@@ -132,9 +132,20 @@ export default function Favorito({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  emptyText: { fontSize: SCREEN_WIDTH * 0.045, color: '#555' },
+  loadingContainer: { 
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center' 
+  },
+  emptyContainer: { 
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center' 
+  },
+  emptyText: { 
+    fontSize: SCREEN_WIDTH * 0.045, 
+    color: '#555' 
+  },
   card: {
     flex: 1,
     margin: SCREEN_WIDTH * 0.02,
@@ -145,7 +156,10 @@ const styles = StyleSheet.create({
     position: 'relative',
     minWidth: SCREEN_WIDTH * 0.42,
   },
-  image: { width: SCREEN_WIDTH * 0.32, height: SCREEN_WIDTH * 0.32 },
+  image: { 
+    width: SCREEN_WIDTH * 0.32, 
+    height: SCREEN_WIDTH * 0.32 
+  },
   name: {
     fontWeight: 'bold',
     fontSize: SCREEN_WIDTH * 0.045,
@@ -153,9 +167,23 @@ const styles = StyleSheet.create({
     marginTop: 6,
     textAlign: 'center',
   },
-  typeContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', marginTop: 6 },
-  typeBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 12, margin: 2 },
-  typeText: { color: '#fff', fontSize: SCREEN_WIDTH * 0.033, fontWeight: 'bold' },
+  typeContainer: { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    justifyContent: 'center', 
+    marginTop: 6 
+  },
+  typeBadge: { 
+    paddingHorizontal: 8, 
+    paddingVertical: 2, 
+    borderRadius: 12, 
+    margin: 2 
+  },
+  typeText: { 
+    color: '#fff', 
+    fontSize: SCREEN_WIDTH * 0.033, 
+    fontWeight: 'bold' 
+  },
   deleteButton: {
     position: 'absolute',
     top: 6,

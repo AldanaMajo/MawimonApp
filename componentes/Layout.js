@@ -69,17 +69,18 @@ export default function Layout({ header, children, navigation }) {
 
 const styles = StyleSheet.create({
  
-  container: {
+container: {
     flex: 1, 
-  },
+    backgroundColor: '#f5f5f5',
+},
 
-  header: {
+header: {
     height: 35,
     justifyContent: 'center', 
     alignItems: 'center',   
-  },
+},
 
-  headerNav: {
+headerNav: {
     height: 60,
     backgroundColor: '#a3a2a2',
     flexDirection: 'row',       
@@ -93,11 +94,11 @@ iconoU: {
   alignItems: 'center',
 },
 
-  headerText: {
+headerText: {
     color: 'black',
     fontSize: 24, 
     fontFamily: 'TituloP',
-  },
+},
   
 body: {
   flex: 1,
@@ -107,19 +108,19 @@ body: {
   backgroundColor: '#f5f5f5',
 },
 
-
-
-  footer: {
+footer: {
     height: 80, 
     backgroundColor: '#3384cc', 
     alignItems: 'center', 
     flexDirection: 'row',
     justifyContent: 'space-around',
-  },
-  footerButton: {
+},
+
+footerButton: {
     justifyContent: 'center',
     alignItems: 'center',
-  },
+},
+
 footerLabel: {
   color: 'white',
   fontSize: 16,

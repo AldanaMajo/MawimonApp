@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  ActivityIndicator,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+  View, Text, Image, TouchableOpacity, ActivityIndicator, StyleSheet, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';

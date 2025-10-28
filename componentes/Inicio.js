@@ -1,8 +1,57 @@
-import { StyleSheet, View, Text, ActivityIndicator, TouchableOpacity, FlatList } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, TouchableOpacity, FlatList, Image } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Layout from './Layout';
 
 const PoGoApi = 'https://pogoapi.net/api/v1/raid_bosses.json';
+
+// 🔹 Componente separado para cada ítem de la lista
+function IncursionCard({ item, navigation }) {
+  const [pokemonData, setPokemonData] = useState(null);
+
+  useEffect(() => {
+    const fetchPokemon = async () => {
+      try {
+        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${item.name.toLowerCase()}`);
+        const data = await res.json();
+        setPokemonData(data);
+      } catch {
+        console.log("No se pudo cargar el Pokémon:", item.name);
+      }
+    };
+    fetchPokemon();
+  }, [item.name]);
+
+  return (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => {
+        if (pokemonData) {
+          navigation.navigate('PokemonDetail', { pokemon: pokemonData });
+        }
+      }}
+      disabled={!pokemonData} 
+    >
+      <View style={styles.cardContent}>
+        {pokemonData ? (
+          <Image
+            source={{ uri: pokemonData.sprites.other['official-artwork'].front_default }}
+            style={styles.imagen}
+            resizeMode="contain"
+          />
+        ) : (
+          <ActivityIndicator size="small" color="#aaa" />
+        )}
+        <View style={{ flex: 1 }}>
+          <Text style={styles.nombre}>{item.name}</Text>
+          <Text>Forma: {item.form || "Normal"}</Text>
+          <Text>CP Máx: {item.max_unboosted_cp || "N/A"}</Text>
+          <Text>Shiny: {item.possible_shiny ? "Sí ✨" : "No"}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
 
 function Inicio({ navigation }) {
   const [jefes, setJefes] = useState({}); 
@@ -41,35 +90,23 @@ function Inicio({ navigation }) {
 
       {/* Botones para filtrar niveles */}
       <View style={styles.filtros}>
-  {Object.keys(jefes.current || {})
-    .filter((nivel) => (jefes.current?.[nivel]?.length ?? 0) > 0)
-    .map((nivel) => (
-      <TouchableOpacity
-        key={nivel}
-        style={[styles.boton, nivel === nivelSelec && styles.botonActivo]}
-        onPress={() => setNivelSelec(nivel)}
-      >
-        <Text style={styles.textoBoton}>Nivel {nivel}</Text>
-      </TouchableOpacity>
-    ))}
-</View>
+        {Object.keys(jefes.current || {})
+          .filter((nivel) => (jefes.current?.[nivel]?.length ?? 0) > 0)
+          .map((nivel) => (
+            <TouchableOpacity
+              key={nivel}
+              style={[styles.boton, nivel === nivelSelec && styles.botonActivo]}
+              onPress={() => setNivelSelec(nivel)}
+            >
+              <Text style={styles.textoBoton}>Nivel {nivel}</Text>
+            </TouchableOpacity>
+          ))}
+      </View>
 
-
-      <FlatList style={styles.contenedor}
+      <FlatList
         data={Incursiones}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => navigation.navigate("Detalles", { pokemon: item })}
-          >
-            <Text style={styles.nombre}>{item.name}</Text>
-            <Text>Forma: {item.form}</Text>
-            <Text>CP Máx (sin boost): {item.max_unboosted_cp}</Text>
-            <Text>CP Máx (boosted): {item.max_boosted_cp}</Text>
-            <Text>Shiny: {item.possible_shiny ? "Sí" : " No"}</Text>
-          </TouchableOpacity>
-        )}
+        renderItem={({ item }) => <IncursionCard item={item} navigation={navigation} />}
       />
     </Layout>
   );
@@ -81,18 +118,23 @@ const styles = StyleSheet.create({
   boton: { padding: 10, backgroundColor: "#ddd", borderRadius: 8 },
   botonActivo: { backgroundColor: "#4CAF50" },
   textoBoton: { color: "#000", fontWeight: "bold" },
-  contenedor: {
-    flex: 1,
-    padding: 16,
-  },
-  card: {
-    padding: 12,
-    marginVertical: 8,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-  },
+  contenedor: { flex: 1, padding: 16 },
+  card: { padding: 12, marginVertical: 8, borderWidth: 1, borderColor: "#ccc", borderRadius: 10 },
   nombre: { fontSize: 16, fontWeight: "bold" },
+  cardContent: {
+      flex: 1,
+    margin: 8,
+    borderRadius: 16,
+    padding: 12,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 6,
+    elevation: 5,
+    position: 'relative',
+    },
+  imagen: { width: 80, height: 80, marginRight: 10 },
 });
 
 export default Inicio;
