@@ -1,12 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-  Image,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Audio } from 'expo-av'; // 🎵 Librería de audio
@@ -345,21 +338,120 @@ export default function MiniGame() {
 
 // 🎨 Estilos
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f0f4f3', alignItems: 'center', paddingTop: '5%' },
-  title: { fontSize: SCREEN_WIDTH * 0.08, fontWeight: '700', marginBottom: 8 },
-  subtitle: { fontSize: SCREEN_WIDTH * 0.045, color: '#444', marginBottom: 12 },
-  button: { marginTop: 12, backgroundColor: '#3b82f6', paddingVertical: 12, paddingHorizontal: 24, borderRadius: 8 },
-  buttonText: { color: '#fff', fontWeight: '600' },
-  header: { fontSize: SCREEN_WIDTH * 0.045, marginBottom: 8, textAlign: 'center' },
-  gameArea: { width: GAME_AREA_WIDTH, height: GAME_AREA_WIDTH, borderWidth: 2, borderColor: '#2e7d32', backgroundColor: '#a5d6a7', overflow: 'hidden', borderRadius: 8 },
-  row: { flexDirection: 'row' },
-  cell: { width: CELL_SIZE, height: CELL_SIZE, borderWidth: 0.5, borderColor: '#4caf50', alignItems: 'center', justifyContent: 'center', backgroundColor: '#81c784' },
-  countdownOverlay: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(255,255,255,0.6)', alignItems: 'center', justifyContent: 'center', zIndex: 10 },
-  countdownText: { fontSize: SCREEN_WIDTH * 0.15, fontWeight: '800', color: '#1b5e20' },
-  dpadBase: { backgroundColor: '#cfcfcf', borderRadius: 100, width: SCREEN_WIDTH * 0.4, height: SCREEN_WIDTH * 0.4, marginTop: 16, alignItems: 'center', justifyContent: 'center' },
-  dpadCross: { position: 'relative', width: '90%', height: '90%', alignItems: 'center', justifyContent: 'center' },
-  dpadButton: { position: 'absolute', width: SCREEN_WIDTH * 0.13, height: SCREEN_WIDTH * 0.13, backgroundColor: '#222', borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  dpadUp: { top: 0 }, dpadDown: { bottom: 0 }, dpadLeft: { left: 0 }, dpadRight: { right: 0 },
-  dpadCenter: { width: SCREEN_WIDTH * 0.18, height: SCREEN_WIDTH * 0.18, backgroundColor: '#444', borderRadius: SCREEN_WIDTH * 0.09 },
-  dpadArrow: { fontSize: SCREEN_WIDTH * 0.05, color: '#fff', fontWeight: 'bold' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#f0f4f3', 
+    alignItems: 'center', 
+    paddingTop: '5%' 
+  },
+  title: { 
+    fontSize: SCREEN_WIDTH * 0.08, 
+    fontWeight: '700', 
+    marginBottom: 8 
+  },
+  subtitle: { 
+    fontSize: SCREEN_WIDTH * 0.045, 
+    color: '#444', 
+    marginBottom: 12 
+  },
+  button: { 
+    marginTop: 12, 
+    backgroundColor: '#3b82f6', 
+    paddingVertical: 12, 
+    paddingHorizontal: 24, 
+    borderRadius: 8 
+  },
+  buttonText: { 
+    color: '#fff', 
+    fontWeight: '600' 
+  },
+  header: { 
+    fontSize: SCREEN_WIDTH * 0.045, 
+    marginBottom: 8, 
+    textAlign: 'center' 
+  },
+  gameArea: { 
+    width: GAME_AREA_WIDTH, 
+    height: GAME_AREA_WIDTH, 
+    borderWidth: 2, 
+    borderColor: '#2e7d32', 
+    backgroundColor: '#a5d6a7', 
+    overflow: 'hidden', 
+    borderRadius: 8 
+  },
+  row: { 
+    flexDirection: 'row' 
+  },
+  cell: { 
+    width: CELL_SIZE, 
+    height: CELL_SIZE, 
+    borderWidth: 0.5, 
+    borderColor: '#4caf50', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    backgroundColor: '#81c784' 
+  },
+  countdownOverlay: { 
+    position: 'absolute', 
+    top: 0, left: 0, 
+    width: '100%', 
+    height: '100%', 
+    backgroundColor: 'rgba(255,255,255,0.6)', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    zIndex: 10 
+  },
+  countdownText: { 
+    fontSize: SCREEN_WIDTH * 0.15, 
+    fontWeight: '800', 
+    color: '#1b5e20' 
+  },
+  dpadBase: { 
+    backgroundColor: '#cfcfcf', 
+    borderRadius: 100, 
+    width: SCREEN_WIDTH * 0.4, 
+    height: SCREEN_WIDTH * 0.4, 
+    marginTop: 16, 
+    alignItems: 'center', 
+    justifyContent: 'center' 
+  },
+  dpadCross: { 
+    position: 'relative', 
+    width: '90%', 
+    height: '90%', 
+    alignItems: 'center', 
+    justifyContent: 'center' 
+  },
+  dpadButton: { 
+    position: 'absolute', 
+    width: SCREEN_WIDTH * 0.13, 
+    height: SCREEN_WIDTH * 0.13, 
+    backgroundColor: '#222', 
+    borderRadius: 16, 
+    alignItems: 'center', 
+    justifyContent: 'center' 
+  },
+  dpadUp: { 
+    top: 0 
+  }, 
+    dpadDown: { 
+      bottom: 0 
+    }, 
+    dpadLeft: { 
+      left: 0 
+    }, 
+    dpadRight: { 
+      right: 0 
+    },
+  dpadCenter: { 
+    width: SCREEN_WIDTH * 0.18, 
+    height: SCREEN_WIDTH * 0.18, 
+    backgroundColor: '#444', 
+    borderRadius: SCREEN_WIDTH * 0.09 
+  },
+  dpadArrow: { 
+    fontSize: SCREEN_WIDTH * 0.05, 
+    color: '#fff', 
+    fontWeight: 'bold' 
+  },
 });

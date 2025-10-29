@@ -58,10 +58,10 @@ export default function App() {
           <Stack.Screen 
             name="MiniGame" 
             component={MiniGame}
-            options={{ title: 'MiniGame' }}
+            options={{ title: 'MiniGame', headerStyle: { backgroundColor: '#a3a2a2' } }}
           />
         </Stack.Navigator>
-      </NavigationContainer>
+      </NavigationContainer> 
     </SafeAreaProvider>
   );
 }

@@ -41,11 +41,11 @@ function IncursionCard({ item, navigation }) {
         ) : (
           <ActivityIndicator size="small" color="#aaa" />
         )}
-        <View style={{ flex: 1 }}>
-          <Text style={styles.nombre}>{item.name}</Text>
-          <Text>Forma: {item.form || "Normal"}</Text>
-          <Text>CP Máx: {item.max_unboosted_cp || "N/A"}</Text>
-          <Text>Shiny: {item.possible_shiny ? "Sí " : "No"}</Text>
+        <Text style={styles.nombre}>{item.name}</Text>
+        <View style={styles.contTexto}>
+          <Text style={styles.texto}>Forma: {item.form || "Normal"}</Text>
+          <Text style={styles.texto}>CP Máx: {item.max_unboosted_cp || "N/A"}</Text>
+          <Text style={styles.texto}>Shiny: {item.possible_shiny ? "Sí" : "No"}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -86,7 +86,6 @@ function Inicio({ navigation }) {
 
   return (
     <Layout header="Jefes de Incursiones" navigation={navigation} style={styles.contenedor}>
-      <Text style={styles.titulo}>Nivel {nivelSelec}</Text>
 
       {/* Botones para filtrar niveles */}
       <View style={styles.filtros}>
@@ -98,7 +97,7 @@ function Inicio({ navigation }) {
               style={[styles.boton, nivel === nivelSelec && styles.botonActivo]}
               onPress={() => setNivelSelec(nivel)}
             >
-              <Text style={styles.textoBoton}>Nivel {nivel}</Text>
+              <Text  style={[styles.textoBoton, nivel === nivelSelec && styles.btnTextAct]}>Nivel {nivel}</Text>
             </TouchableOpacity>
           ))}
       </View>
@@ -113,39 +112,52 @@ function Inicio({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  titulo: { 
-    fontSize: 20, 
-    fontWeight: "bold", 
-    marginBottom: 10 
-  },
+ 
   filtros: { 
     flexDirection: "row", 
     justifyContent: "space-around", 
-    marginVertical: 10 
+    marginVertical: 10,
+    backgroundColor: "#f4db72",
+    padding: 10,
   },
   boton: { 
-    padding: 10, 
-    backgroundColor: "#ddd", 
-    borderRadius: 8 
+    padding: 5, 
+    paddingLeft:15,
+    paddingRight: 15,
+    backgroundColor: "#3384cc", 
+    borderRadius: 10 
   },
   botonActivo: { 
-    backgroundColor: "#4CAF50" 
+    backgroundColor: "#161943" ,
+    
   },
   textoBoton: { 
     color: "#000", 
-    fontWeight: "bold" 
+    fontWeight: "bold" ,
+  },
+  btnTextAct:{
+    color : "#fff",
+    fontWeight: "bold",
   },
   contenedor: { 
     flex: 1, 
     padding: 16 
   },
   card: { 
-    padding: 12, 
-    margin: 15, 
-    borderWidth: 1, 
-    borderColor: "#d31c1cff", 
-    borderRadius: 10, 
-    
+    flex: 1,
+    margin: 10,
+    borderRadius: 16,
+    padding: 10,
+    alignItems: 'center',
+    shadowColor: 'rgba(151, 142, 142, 0)',
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 7,
+    elevation: 10,
+    position: 'relative',
+    borderColor:'#79747e',
+    borderWidth: 0.5,
+    backgroundColor: 'rgba(245, 245, 245, 0.03)',
   },
   nombre: { 
     fontSize: 16, 
@@ -160,12 +172,24 @@ const styles = StyleSheet.create({
     margin: 2,
     justifyContent: "center",
     alignItems: "center",
-    
     },
   imagen: { 
-    width: 80, 
-    height: 80, 
-   
+    width: 100, 
+    height: 100, 
+  },
+  texto: {
+    flexDirection: 'row', 
+    margin: 5,
+    backgroundColor: '#e9d2b4',
+    padding: 5,
+    borderRadius: 10,
+    textAlign: 'center',
+  },
+  contTexto:{
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    justifyContent: 'center', 
+    marginTop: 6 
   },
 });
 

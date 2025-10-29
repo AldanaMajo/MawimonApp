@@ -1,13 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import {
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  TextInput,
-  View,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import {StyleSheet, FlatList, ActivityIndicator, TextInput, View, Text, TouchableOpacity } from 'react-native';
 import { useState, useEffect } from 'react';
 import { PokemonCard } from './PokemonCard';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
@@ -79,8 +71,7 @@ function Buscar({ navigation }) {
   useEffect(() => {
   const timeout = setTimeout(() => handleSearch(), 600);
   return () => clearTimeout(timeout);
-}, [searchText]);
-
+  }, [searchText]);
 
   return (
     
@@ -99,9 +90,7 @@ function Buscar({ navigation }) {
         <Icon name="search" size={22} color="#092891ff" />
       </TouchableOpacity>
         </View>
-
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
         <FlatList
           data={searchResult || pokemon}
           keyExtractor={(item, index) => `${item.name}-${index}`}
@@ -117,9 +106,9 @@ function Buscar({ navigation }) {
               <ActivityIndicator size="large" color="#000" />
             ) : null
           }
+          
         />
       </Layout>
-    
   );
 }
 
@@ -154,11 +143,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',  
     alignItems: 'center', 
     paddingHorizontal: 15,
-},
-iconoU: {
+  },
+  iconoU: {
   justifyContent: 'center',
   alignItems: 'center',
-},
+  },
   errorText: {
     color: 'red',
     textAlign: 'center',
