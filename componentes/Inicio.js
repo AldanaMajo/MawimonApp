@@ -143,23 +143,29 @@ const styles = StyleSheet.create({
     padding: 12, 
     margin: 15, 
     borderWidth: 1, 
-    borderColor: "#ccc", 
-    borderRadius: 10 
+    borderColor: "#d31c1cff", 
+    borderRadius: 10, 
+    
   },
   nombre: { 
     fontSize: 16, 
-    fontWeight: "bold" 
+    fontWeight: "bold", 
+    fontFamily: 'pokemon',
+    textAlign: 'center',
   },
   cardContent: {
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 12,
     margin: 2,
+    justifyContent: "center",
+    alignItems: "center",
+    
     },
   imagen: { 
     width: 80, 
     height: 80, 
-    marginRight: 10 
+   
   },
 });
 
