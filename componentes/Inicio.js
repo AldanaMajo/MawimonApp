@@ -4,7 +4,15 @@ import Layout from './Layout';
 
 const PoGoApi = 'https://pogoapi.net/api/v1/raid_bosses.json';
 
-// Componentes
+// Colores por tipo
+const typeColor = {
+  fire: '#F08030', water: '#6890F0', grass: '#78C850', electric: '#F8D030',
+  psychic: '#F85888', ice: '#98D8D8', dragon: '#7038F8', dark: '#705848',
+  fairy: '#EE99AC', normal: '#A8A878', fighting: '#C03028', flying: '#A890F0',
+  poison: '#A040A0', ground: '#E0C068', rock: '#B8A038', bug: '#A8B820',
+  ghost: '#705898', steel: '#B8B8D0',
+};
+
 function IncursionCard({ item, navigation }) {
   const [pokemonData, setPokemonData] = useState(null);
 
@@ -21,9 +29,12 @@ function IncursionCard({ item, navigation }) {
     fetchPokemon();
   }, [item.name]);
 
+  // Color de fondo por tipo
+  const bgColor = pokemonData ? typeColor[pokemonData.types[0].type.name] || '#A8A878' : 'rgba(245,245,245,0.03)';
+
   return (
     <TouchableOpacity
-      style={styles.card}
+      style={[styles.card, { backgroundColor: bgColor }]}
       onPress={() => {
         if (pokemonData) {
           navigation.navigate('PokemonDetail', { pokemon: pokemonData });
@@ -51,7 +62,6 @@ function IncursionCard({ item, navigation }) {
     </TouchableOpacity>
   );
 }
-
 
 function Inicio({ navigation }) {
   const [jefes, setJefes] = useState({}); 
@@ -97,7 +107,7 @@ function Inicio({ navigation }) {
               style={[styles.boton, nivel === nivelSelec && styles.botonActivo]}
               onPress={() => setNivelSelec(nivel)}
             >
-              <Text  style={[styles.textoBoton, nivel === nivelSelec && styles.btnTextAct]}>Nivel {nivel}</Text>
+              <Text style={[styles.textoBoton, nivel === nivelSelec && styles.btnTextAct]}>Nivel {nivel}</Text>
             </TouchableOpacity>
           ))}
       </View>
@@ -112,7 +122,6 @@ function Inicio({ navigation }) {
 }
 
 const styles = StyleSheet.create({
- 
   filtros: { 
     flexDirection: "row", 
     justifyContent: "space-around", 
@@ -129,7 +138,6 @@ const styles = StyleSheet.create({
   },
   botonActivo: { 
     backgroundColor: "#161943" ,
-    
   },
   textoBoton: { 
     color: "#000", 
@@ -157,13 +165,13 @@ const styles = StyleSheet.create({
     position: 'relative',
     borderColor:'#79747e',
     borderWidth: 0.5,
-    backgroundColor: 'rgba(245, 245, 245, 0.03)',
   },
   nombre: { 
     fontSize: 16, 
     fontWeight: "bold", 
     fontFamily: 'pokemon',
     textAlign: 'center',
+    color: '#fff',
   },
   cardContent: {
     paddingHorizontal: 8,
@@ -172,7 +180,7 @@ const styles = StyleSheet.create({
     margin: 2,
     justifyContent: "center",
     alignItems: "center",
-    },
+  },
   imagen: { 
     width: 100, 
     height: 100, 
@@ -180,10 +188,11 @@ const styles = StyleSheet.create({
   texto: {
     flexDirection: 'row', 
     margin: 5,
-    backgroundColor: '#e9d2b4',
+    backgroundColor: 'rgba(255,255,255,0.3)',
     padding: 5,
     borderRadius: 10,
     textAlign: 'center',
+    color: '#000',
   },
   contTexto:{
     flexDirection: 'row', 
