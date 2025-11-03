@@ -1,10 +1,24 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  Alert, 
+  ImageBackground,
+  ScrollView,
+  Dimensions
+} from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
 
+const { width, height } = Dimensions.get('window');
+
 export default function Registro({ navigation }) {
+  const insets = useSafeAreaInsets();
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
   const [email, setEmail] = useState('');
@@ -20,36 +34,16 @@ export default function Registro({ navigation }) {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      await updateProfile(user, {
-        displayName: `${nombre} ${apellido}`,
-      });
+      await updateProfile(user, { displayName: `${nombre} ${apellido}` });
+      await setDoc(doc(db, 'usuarios', user.uid), { nombre, apellido, email, creadoEn: new Date() });
 
-      await setDoc(doc(db, 'usuarios', user.uid), {
-        nombre,
-        apellido,
-        email,
-        creadoEn: new Date(),
-      });
-
- 
       Alert.alert('Éxito', 'Tu cuenta ha sido creada exitosamente.');
-      setNombre('');
-      setApellido('');
-      setEmail('');
-      setPassword('');
+      setNombre(''); setApellido(''); setEmail(''); setPassword('');
 
-     
-      setTimeout(() => {
-        navigation.navigate('InicioSesion');
-      }, 1000);
-
+      setTimeout(() => navigation.navigate('InicioSesion'), 1000);
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
         Alert.alert('Este correo ya está registrado', 'Intenta iniciar sesión.');
-        setNombre('');
-        setApellido('');
-        setEmail('');
-        setPassword('');
       } else {
         Alert.alert('Error', error.message);
       }
@@ -57,82 +51,118 @@ export default function Registro({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Registro de Usuario</Text>
+    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <ImageBackground 
+        source={require('../assets/Registro.png')} 
+        style={styles.background} 
+        resizeMode="cover"
+      >
+        <ScrollView 
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingHorizontal: 30,
+            paddingTop: insets.top + 10, // franja segura arriba
+            paddingBottom: insets.bottom + 20, // franja segura abajo
+          }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.container}>
+            <Text style={styles.title}>Registro de Usuario</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre"
-        value={nombre}
-        onChangeText={setNombre}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Apellido"
-        value={apellido}
-        onChangeText={setApellido}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Correo electrónico"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+            <TextInput
+              style={styles.input}
+              placeholder="Nombre"
+              placeholderTextColor="#e1e5ee"
+              value={nombre}
+              onChangeText={setNombre}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Apellido"
+              placeholderTextColor="#e1e5ee"
+              value={apellido}
+              onChangeText={setApellido}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Correo electrónico"
+              placeholderTextColor="#e1e5ee"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Contraseña"
+              placeholderTextColor="#e1e5ee"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
 
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Registrarse</Text>
-      </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleRegister}>
+              <Text style={styles.buttonText}>Registrarse</Text>
+            </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('InicioSesion')}>
-        <Text style={styles.link}>¿Ya tienes cuenta? Inicia sesión</Text>
-      </TouchableOpacity>
-    </View>
+            <TouchableOpacity onPress={() => navigation.navigate('InicioSesion')}>
+              <Text style={styles.link}>¿Ya tienes cuenta? Inicia sesión</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </ImageBackground>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    backgroundColor: '#f9f9f9',
+    width: '100%',
+    height: '100%',
+  },
+  container: {
+    width: '100%',
+    maxWidth: 380,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    padding: 20,
+    borderRadius: 20,
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     marginBottom: 25,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#fff',
+    textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.4)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
   input: {
     width: '100%',
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.15)',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: 'rgba(255,255,255,0.3)',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 12,
     marginBottom: 15,
     fontSize: 16,
-    color: '#333',
-    elevation: 2,
+    color: '#fff',
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#0056b3',
     paddingVertical: 14,
     borderRadius: 12,
     width: '100%',
     alignItems: 'center',
     marginTop: 10,
-    elevation: 3,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
   },
   buttonText: {
     color: '#fff',
@@ -142,8 +172,12 @@ const styles = StyleSheet.create({
   },
   link: {
     marginTop: 18,
-    color: '#007bff',
+    color: '#fff',
     fontSize: 15,
     fontWeight: '600',
+    textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 });

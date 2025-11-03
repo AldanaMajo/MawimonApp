@@ -65,12 +65,13 @@ export default function App() {
           <Stack.Screen 
             name="Registro" 
             component={Registro}
-            options={{ title: 'Registro de Usuario', headerStyle: { backgroundColor: '#a3a2a2' } }}
+             options={{ headerShown: false }}
+            
           />
           <Stack.Screen 
             name="InicioSesion" 
             component={InicioSesion}
-            options={{ title: 'Iniciar Sesión', headerStyle: { backgroundColor: '#a3a2a2' } }}
+             options={{ headerShown: false }}
           />
         </Stack.Navigator>
       </NavigationContainer> 

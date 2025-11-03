@@ -1,9 +1,20 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  Alert, 
+  ImageBackground, 
+  ScrollView 
+} from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 
 export default function Login({ navigation }) {
+  const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -18,60 +29,91 @@ export default function Login({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Iniciar sesión</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Correo electrónico"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Entrar</Text>
-      </TouchableOpacity>
+    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <ImageBackground
+        source={require('../assets/InicioSesion.png')}
+        style={styles.background}
+        resizeMode="cover"
+      >
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'center', // ✅ centra verticalmente
+            alignItems: 'center',
+            paddingHorizontal: 24,
+            paddingTop: insets.top + 10, // franja segura arriba
+            paddingBottom: insets.bottom + 20, // franja segura abajo
+          }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.container}>
+            <Text style={styles.title}>Iniciar sesión</Text>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Registro')}>
-        <Text style={styles.link}>¿No tienes cuenta? Regístrate</Text>
-      </TouchableOpacity>
-    </View>
+            <TextInput
+              style={styles.input}
+              placeholder="Correo electrónico"
+              placeholderTextColor="#e1e5ee"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Contraseña"
+              placeholderTextColor="#e1e5ee"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+
+            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+              <Text style={styles.buttonText}>Entrar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => navigation.navigate('Registro')}>
+              <Text style={styles.link}>¿No tienes cuenta? Regístrate</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </ImageBackground>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    backgroundColor: '#f5f7fa',
+    width: '100%',
+    height: '100%',
+  },
+  container: {
+    width: '100%',
+    maxWidth: 380,
+    backgroundColor: 'rgba(0,0,0,0.35)', // Fondo translúcido
+    padding: 20,
+    borderRadius: 20,
   },
   title: {
     fontSize: 28,
     marginBottom: 25,
     fontWeight: 'bold',
-    color: '#222',
+    color: '#fff',
     textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.4)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
   input: {
     width: '100%',
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.15)',
     borderWidth: 1,
-    borderColor: '#d0d0d0',
+    borderColor: 'rgba(255,255,255,0.3)',
     paddingVertical: 12,
-    paddingHorizontal: 15,
+    paddingHorizontal: 16,
     borderRadius: 12,
     marginBottom: 16,
     fontSize: 16,
-    color: '#333',
-    elevation: 2, 
+    color: '#fff',
   },
   button: {
     backgroundColor: '#007bff',
@@ -90,10 +132,12 @@ const styles = StyleSheet.create({
   },
   link: {
     marginTop: 18,
-    color: '#007bff',
+    color: '#fff',
     fontWeight: '600',
     fontSize: 15,
     textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 });
-
