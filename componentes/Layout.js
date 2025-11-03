@@ -6,15 +6,17 @@ import { Feather as Icon } from '@expo/vector-icons';
 import { Ionicons as Icons } from '@expo/vector-icons';
 
 // HeaderNav
-const HeaderNav = () => (
-  <View style={styles.headerNav}>
-   
-    <TouchableOpacity style={styles.iconoU}>
-    <Icons name="person-circle-outline" size={40} color="#000" />
-    </TouchableOpacity>
+const HeaderNav = () => {
+  const navigation = useNavigation(); 
+  return (
+    <View style={styles.headerNav}>
+      <TouchableOpacity style={styles.iconoU} onPress={() => navigation.navigate('Registro')}>
+        <Icons name="person-circle-outline" size={40} color="#000" />
+      </TouchableOpacity>
+    </View>
+  );
+};
 
-  </View>
-);
 // Header
 const Header = ({label}) => (
   <View style={styles.header}>
@@ -51,7 +53,7 @@ const Footer = ({ navigation }) => {
       <FooterButtonGame icons="game-controller-outline" label="MiniGame" onPress={() => navigation.navigate('MiniGame')} />
     </View>
   );
-};
+}; 
 
 // Layout
 export default function Layout({ header, children, navigation }) {

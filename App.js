@@ -11,6 +11,8 @@ import MiniGame from './componentes/MiniGame';
 import Buscar from './componentes/Buscar';
 import Favoritos from './componentes/Favoritos';
 import PokemonDetail from './componentes/PokemonDetail';
+import Registro from './componentes/Registro';
+import InicioSesion from './componentes/InicioSesion';
 
 const Stack = createNativeStackNavigator();
 
@@ -59,6 +61,16 @@ export default function App() {
             name="MiniGame" 
             component={MiniGame}
             options={{ title: 'MiniGame', headerStyle: { backgroundColor: '#a3a2a2' } }}
+          />
+          <Stack.Screen 
+            name="Registro" 
+            component={Registro}
+            options={{ title: 'Registro de Usuario', headerStyle: { backgroundColor: '#a3a2a2' } }}
+          />
+          <Stack.Screen 
+            name="InicioSesion" 
+            component={InicioSesion}
+            options={{ title: 'Iniciar Sesión', headerStyle: { backgroundColor: '#a3a2a2' } }}
           />
         </Stack.Navigator>
       </NavigationContainer> 
