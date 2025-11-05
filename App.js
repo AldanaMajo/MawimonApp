@@ -13,6 +13,7 @@ import Favoritos from './componentes/Favoritos';
 import PokemonDetail from './componentes/PokemonDetail';
 import Registro from './componentes/Registro';
 import InicioSesion from './componentes/InicioSesion';
+import InicioPrincipal from './componentes/InicioPrincipal';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,11 +31,15 @@ export default function App() {
       </View>
     );
   }
-
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Inicio">
+        <Stack.Navigator initialRouteName="InicioPrincipal">
+           <Stack.Screen 
+            name="InicioPrincipal" 
+            component={InicioPrincipal}
+             options={{ headerShown: false }}
+          />
           <Stack.Screen 
             name="Inicio"
             component={Inicio}
@@ -66,7 +71,6 @@ export default function App() {
             name="Registro" 
             component={Registro}
              options={{ headerShown: false }}
-            
           />
           <Stack.Screen 
             name="InicioSesion" 

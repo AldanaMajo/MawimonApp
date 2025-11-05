@@ -21,7 +21,7 @@ export default function Login({ navigation }) {
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      Alert.alert('Inicio de sesión exitoso ✅');
+      Alert.alert('Inicio de sesión exitoso');
       navigation.navigate('Inicio');
     } catch (error) {
       Alert.alert('Error', 'Correo o contraseña incorrectos');
@@ -38,7 +38,7 @@ export default function Login({ navigation }) {
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
-            justifyContent: 'center', // ✅ centra verticalmente
+            justifyContent: 'center',
             alignItems: 'center',
             paddingHorizontal: 24,
             paddingTop: insets.top + 10, // franja segura arriba
