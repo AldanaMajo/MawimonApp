@@ -19,11 +19,15 @@ const { width, height } = Dimensions.get('window');
 
 export default function Registro({ navigation }) {
   const insets = useSafeAreaInsets();
+
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // ------------------------------
+  // 🔹 Función principal de registro
+  // ------------------------------
   const handleRegister = async () => {
     if (!nombre || !apellido || !email || !password) {
       Alert.alert('Campos vacíos', 'Por favor completa todos los campos.');
@@ -31,25 +35,64 @@ export default function Registro({ navigation }) {
     }
 
     try {
+      // Crear usuario en Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      // Actualizar el nombre visible del usuario
       await updateProfile(user, { displayName: `${nombre} ${apellido}` });
-      await setDoc(doc(db, 'usuarios', user.uid), { nombre, apellido, email, creadoEn: new Date() });
 
-      Alert.alert('Éxito', 'Tu cuenta ha sido creada exitosamente.');
-      setNombre(''); setApellido(''); setEmail(''); setPassword('');
+      // Guardar información adicional en Firestore
+      await setDoc(doc(db, 'usuarios', user.uid), { 
+        nombre, 
+        apellido, 
+        email, 
+        creadoEn: new Date() 
+      });
 
-      setTimeout(() => navigation.navigate('InicioSesion'), 1000);
+      console.log('Usuario registrado correctamente');
+
+      // Limpiar los campos
+      setNombre('');
+      setApellido('');
+      setEmail('');
+      setPassword('');
+
+      // Mostrar alerta de éxito
+      Alert.alert(
+        'Éxito',
+        'Registrado correctamente. Inicia sesión para continuar.',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('InicioSesion'), // Navega después del OK
+          },
+        ],
+        { cancelable: false }
+      );
+
     } catch (error) {
+      console.error(' Error al registrar:', error);
+
       if (error.code === 'auth/email-already-in-use') {
-        Alert.alert('Este correo ya está registrado', 'Intenta iniciar sesión.');
+        Alert.alert(
+          'Correo ya registrado',
+          'Este correo ya está asociado a una cuenta. Inicia sesión.',
+          [
+            {
+              text: 'OK',
+              onPress: () => navigation.navigate('InicioSesion'),
+            },
+          ]
+        );
       } else {
         Alert.alert('Error', error.message);
       }
     }
   };
 
+  
+  //  Renderizado principal
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
       <ImageBackground 
@@ -63,8 +106,8 @@ export default function Registro({ navigation }) {
             justifyContent: 'center',
             alignItems: 'center',
             paddingHorizontal: 30,
-            paddingTop: insets.top + 10, // franja segura arriba
-            paddingBottom: insets.bottom + 20, // franja segura abajo
+            paddingTop: insets.top + 10,
+            paddingBottom: insets.bottom + 20,
           }}
           keyboardShouldPersistTaps="handled"
         >
@@ -92,6 +135,7 @@ export default function Registro({ navigation }) {
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
+              autoCapitalize="none"
             />
             <TextInput
               style={styles.input}

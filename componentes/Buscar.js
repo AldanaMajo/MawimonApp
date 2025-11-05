@@ -6,7 +6,7 @@ import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Ionicons as Icons } from '@expo/vector-icons';
 import Layout from './Layout';
-
+import { LinearGradient } from 'expo-linear-gradient';
 
 
 function Buscar({ navigation }) {
@@ -76,6 +76,7 @@ function Buscar({ navigation }) {
   return (
     
        <Layout header="Pokédex" navigation={navigation} >
+        <LinearGradient colors={['#b3e5fc', '#e1f5fe', '#ffffff']} style={styles.gradient}>
         <View style={styles.searchContainer}>
       <TextInput
         style={styles.input}
@@ -108,11 +109,15 @@ function Buscar({ navigation }) {
           }
           
         />
+        </LinearGradient>
       </Layout>
   );
 }
 
 const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',

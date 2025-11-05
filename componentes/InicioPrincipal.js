@@ -1,12 +1,5 @@
 import React from 'react';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  StyleSheet, 
-  ImageBackground, 
-  Image, 
-  ScrollView 
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, Image, ScrollView 
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets, SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -90,7 +83,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 26,
-    fontFamily: 'pokemon',
     color: '#fff',
     textShadowColor: 'rgba(0,0,0,0.5)',
     textShadowOffset: { width: 2, height: 2 },

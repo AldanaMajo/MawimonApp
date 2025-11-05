@@ -1,6 +1,7 @@
 import { StyleSheet, View, Text, ActivityIndicator, TouchableOpacity, FlatList, Image } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Layout from './Layout';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const PoGoApi = 'https://pogoapi.net/api/v1/raid_bosses.json';
 
@@ -60,6 +61,7 @@ function IncursionCard({ item, navigation }) {
         </View>
       </View>
     </TouchableOpacity>
+    
   );
 }
 
@@ -86,8 +88,10 @@ function Inicio({ navigation }) {
   if (Loading) {
     return (
       <Layout header="Jefes de Incursiones" navigation={navigation} style={styles.contenedor}>
+        <LinearGradient colors={['#b3e5fc', '#e1f5fe', '#ffffff']} style={styles.gradient}>
         <ActivityIndicator size="large" color="#0000ff" />
         <Text style={styles.Letra}>Cargando jefes...</Text>
+       </LinearGradient>
       </Layout>
     );
   }
@@ -96,7 +100,7 @@ function Inicio({ navigation }) {
 
   return (
     <Layout header="Jefes de Incursiones" navigation={navigation} style={styles.contenedor}>
-
+      <LinearGradient colors={['#b3e5fc', '#e1f5fe', '#ffffff']} style={styles.gradient}>
       {/* Botones para filtrar niveles */}
       <View style={styles.filtros}>
         {Object.keys(jefes.current || {})
@@ -117,6 +121,7 @@ function Inicio({ navigation }) {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => <IncursionCard item={item} navigation={navigation} />}
       />
+      </LinearGradient>
     </Layout>
   );
 }

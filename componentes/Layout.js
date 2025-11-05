@@ -1,6 +1,7 @@
 import { StyleSheet, Text,StatusBar, View, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context'
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { Feather as Icon } from '@expo/vector-icons';
 import { Ionicons as Icons } from '@expo/vector-icons';
@@ -10,7 +11,11 @@ const HeaderNav = () => {
   const navigation = useNavigation(); 
   return (
     <View style={styles.headerNav}>
-      <TouchableOpacity style={styles.iconoU} onPress={() => navigation.navigate('Registro')}>
+       <TouchableOpacity style={styles.iconoL} onPress={() => navigation.navigate('Inicio')}>
+       <Image source={require('../assets/WIMAMON.png')} style={{ width: 40, height: 40 }} />
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.iconoU} >
         <Icons name="person-circle-outline" size={40} color="#000" />
       </TouchableOpacity>
     </View>
@@ -25,9 +30,11 @@ const Header = ({label}) => (
 );
 // Body 
 const Body = ({ children }) => (
+  <LinearGradient colors={['#b3e5fc', '#e1f5fe', '#ffffff']} style={styles.gradient}>
   <View style={[styles.body, { flex: 1, width: '100%' }]}>
     {children}
   </View>
+  </LinearGradient>
 );
 const FooterButton = ({ icon, label, onPress }) => (
   <TouchableOpacity style={styles.footerButton} onPress={onPress}>
@@ -70,7 +77,9 @@ export default function Layout({ header, children, navigation }) {
 }
 
 const styles = StyleSheet.create({
- 
+ gradient: {
+    flex: 1,
+  },
 container: {
     flex: 1, 
     backgroundColor: '#f5f5f5',
@@ -79,14 +88,15 @@ container: {
 header: {
     height: 35,
     justifyContent: 'center', 
-    alignItems: 'center',   
+    alignItems: 'center',  
+    backgroundColor: '#b3e5fc', 
 },
 
 headerNav: {
     height: 60,
     backgroundColor: '#a3a2a2',
     flexDirection: 'row',       
-    justifyContent: 'flex-end',  
+    justifyContent: 'space-between',
     alignItems: 'center', 
     paddingHorizontal: 15,
 },
@@ -94,6 +104,10 @@ headerNav: {
 iconoU: {
   justifyContent: 'center',
   alignItems: 'center',
+},
+iconoL: {
+  justifyContent: 'Right',
+  alignItems: 'Right',
 },
 
 headerText: {

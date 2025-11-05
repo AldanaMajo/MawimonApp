@@ -55,6 +55,7 @@ export default function App() {
             component={PokemonDetail}
             options={({ route }) => ({
               title: route.params.pokemon.name.toUpperCase(),
+              headerStyle: { backgroundColor: '#a3a2a2' }
             })}
           />
           <Stack.Screen 

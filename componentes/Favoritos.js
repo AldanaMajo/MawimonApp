@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import Layout from './Layout';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -62,9 +63,12 @@ export default function Favorito({ navigation }) {
 
   if (loading) {
     return (
+
           <Layout header="Favoritos" navigation={navigation} >
+            <LinearGradient colors={['#b3e5fc', '#e1f5fe', '#ffffff']} style={styles.gradient}>
           <ActivityIndicator size="large" color="#666" />
           <Text>Cargando favoritos...</Text>
+          </LinearGradient>
           </Layout>
     );
   }
@@ -73,7 +77,9 @@ export default function Favorito({ navigation }) {
     return (
 
           <Layout header="Favoritos" navigation={navigation} >
+            <LinearGradient colors={['#b3e5fc', '#e1f5fe', '#ffffff']} style={styles.gradient}>
           <Text style={styles.emptyText}>No tienes Pokémon favoritos aún :(</Text>
+          </LinearGradient>
           </Layout>
 
     );
@@ -81,7 +87,7 @@ export default function Favorito({ navigation }) {
 
   return (
     <Layout header="Favoritos" navigation={navigation} >
-      
+      <LinearGradient colors={['#b3e5fc', '#e1f5fe', '#ffffff']} style={styles.gradient}>
         {/* Modal de carga */}
         <Modal visible={loadingPokemon} transparent animationType="fade">
           <View style={styles.modalContainer}>
@@ -127,11 +133,15 @@ export default function Favorito({ navigation }) {
           }}
         />
     
+      </LinearGradient>
     </Layout>
   );
 }
 
 const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+  },
   loadingContainer: { 
     flex: 1, 
     justifyContent: 'center', 
