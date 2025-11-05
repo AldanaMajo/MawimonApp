@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Audio } from 'expo-av'; // 🎵 Librería de audio
+import { Audio } from 'expo-av';
+import { LinearGradient } from 'expo-linear-gradient'; // 🌈 Fondo degradado
 
 // --- Sprites ---
 const SNAKE_SPRITES = {
@@ -47,7 +48,6 @@ export default function MiniGame() {
   const eatSound = useRef();
   const deathSound = useRef();
 
-  // --- Cargar sonidos ---
   useEffect(() => {
     async function loadSounds() {
       try {
@@ -68,7 +68,6 @@ export default function MiniGame() {
     }
 
     loadSounds();
-
     return () => {
       baseSound.current?.unloadAsync();
       eatSound.current?.unloadAsync();
@@ -76,7 +75,6 @@ export default function MiniGame() {
     };
   }, []);
 
-  // --- Cargar mejor puntaje ---
   useEffect(() => {
     (async () => {
       try {
@@ -92,7 +90,6 @@ export default function MiniGame() {
     };
   }, []);
 
-  // --- Loop del juego ---
   useEffect(() => {
     if (running) startLoop();
     else stopLoop();
@@ -116,9 +113,8 @@ export default function MiniGame() {
     intervalRef.current = null;
   };
 
-  // --- Iniciar juego ---
   const startGame = async () => {
-    await baseSound.current?.stopAsync(); // detiene si estaba sonando
+    await baseSound.current?.stopAsync();
     const startPos = { x: Math.floor(GRID_COLS / 2), y: Math.floor(GRID_ROWS / 2) };
     const initialSnake = [
       { x: startPos.x - 1, y: startPos.y },
@@ -149,7 +145,6 @@ export default function MiniGame() {
     }, 1000);
   };
 
-  // --- Game Over ---
   const gameOver = async () => {
     setRunning(false);
     stopLoop();
@@ -164,7 +159,6 @@ export default function MiniGame() {
 
     setScreen('gameover');
 
-    // Guardar mejor puntaje
     try {
       if (score > best) {
         await AsyncStorage.setItem(STORAGE_KEY_BEST, String(score));
@@ -255,80 +249,99 @@ export default function MiniGame() {
       </View>
     ));
 
-  // --- Pantallas ---
+  // --- Pantalla del menú ---
   if (screen === 'menu') {
     return (
       <SafeAreaProvider>
-        <SafeAreaView style={styles.container}>
-          <Text style={styles.title}>Poké-Snake</Text>
-          <TouchableOpacity style={styles.button} onPress={startGame}>
-            <Text style={styles.buttonText}>Jugar</Text>
-          </TouchableOpacity>
-          <Image
-            source={{ uri: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png' }}
-            style={{ width: 120, height: 120, marginTop: 16 }}
-            resizeMode="contain"
-          />
-          <Text style={styles.subtitle}>¡Juega con Caterpie!</Text>
-          <Text style={styles.subtitle}>Mejor puntaje: {best}</Text>
-        </SafeAreaView>
+        <LinearGradient colors={['#b3e5fc', '#e1f5fe', '#ffffff']} style={styles.gradient}>
+          <SafeAreaView style={styles.container}>
+            <View style={styles.overlay}>
+              <Text style={styles.gameTitle}>Poké-Snake</Text>
+              <Image
+                source={{
+                  uri: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png',
+                }}
+                style={styles.caterpieImage}
+                resizeMode="contain"
+              />
+              <Text style={styles.subtitle}>¡Juega con Caterpie!</Text>
+              <Text style={styles.subtitle}>Mejor puntaje: {best}</Text>
+              <TouchableOpacity style={styles.playButton} onPress={startGame}>
+                <Text style={styles.playButtonText}>🎮 Jugar</Text>
+              </TouchableOpacity>
+            </View>
+          </SafeAreaView>
+        </LinearGradient>
       </SafeAreaProvider>
     );
   }
 
+  // --- Pantalla del juego ---
   if (screen === 'game') {
     return (
       <SafeAreaProvider>
-        <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom + 10 }]}>
-          <Text style={styles.header}>
-            Puntaje: {score} Tiempo: {time}s Mejor: {best}
-          </Text>
-          <View style={styles.gameArea}>
-            {renderGrid()}
-            {renderSnake()}
-            {countdown !== null && (
-              <View style={styles.countdownOverlay}>
-                <Text style={styles.countdownText}>{countdown === 0 ? '¡GO!' : countdown}</Text>
-              </View>
-            )}
-          </View>
-          <View style={styles.dpadBase}>
-            <View style={styles.dpadCross}>
-              <TouchableOpacity style={[styles.dpadButton, styles.dpadUp]} onPress={() => changeDir('UP')}>
-                <Text style={styles.dpadArrow}>▲</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.dpadButton, styles.dpadLeft]} onPress={() => changeDir('LEFT')}>
-                <Text style={styles.dpadArrow}>◀</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.dpadButton, styles.dpadRight]} onPress={() => changeDir('RIGHT')}>
-                <Text style={styles.dpadArrow}>▶</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.dpadButton, styles.dpadDown]} onPress={() => changeDir('DOWN')}>
-                <Text style={styles.dpadArrow}>▼</Text>
-              </TouchableOpacity>
-              <View style={styles.dpadCenter} />
+        <LinearGradient colors={['#b3e5fc', '#e1f5fe', '#ffffff']} style={styles.gradient}>
+          <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom + 10 }]}>
+            <Text style={styles.header}>
+              Puntaje: {score} Tiempo: {time}s Mejor: {best}
+            </Text>
+            <View style={styles.gameArea}>
+              {renderGrid()}
+              {renderSnake()}
+              {countdown !== null && (
+                <View style={styles.countdownOverlay}>
+                  <Text style={styles.countdownText}>{countdown === 0 ? '¡GO!' : countdown}</Text>
+                </View>
+              )}
             </View>
-          </View>
-        </SafeAreaView>
+
+            {/* D-Pad */}
+            <View style={styles.dpadBase}>
+              <View style={styles.dpadCross}>
+                <TouchableOpacity style={[styles.dpadButton, styles.dpadUp]} onPress={() => changeDir('UP')}>
+                  <Text style={styles.dpadArrow}>▲</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.dpadButton, styles.dpadLeft]} onPress={() => changeDir('LEFT')}>
+                  <Text style={styles.dpadArrow}>◀</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.dpadButton, styles.dpadRight]} onPress={() => changeDir('RIGHT')}>
+                  <Text style={styles.dpadArrow}>▶</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.dpadButton, styles.dpadDown]} onPress={() => changeDir('DOWN')}>
+                  <Text style={styles.dpadArrow}>▼</Text>
+                </TouchableOpacity>
+                <View style={styles.dpadCenter} />
+              </View>
+            </View>
+          </SafeAreaView>
+        </LinearGradient>
       </SafeAreaProvider>
     );
   }
 
+  // --- Pantalla Game Over ---
   if (screen === 'gameover') {
     return (
       <SafeAreaProvider>
-        <SafeAreaView style={styles.container}>
-          <Text style={styles.title}>¡Game Over!</Text>
-          <Text style={styles.subtitle}>Puntaje: {score}</Text>
-          <Text style={styles.subtitle}>Tiempo: {time}s</Text>
-          <Text style={styles.subtitle}>Mejor: {best}</Text>
-          <TouchableOpacity style={styles.button} onPress={startGame}>
-            <Text style={styles.buttonText}>Jugar otra vez</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, { backgroundColor: '#888' }]} onPress={() => setScreen('menu')}>
-            <Text style={styles.buttonText}>Volver al menú</Text>
-          </TouchableOpacity>
-        </SafeAreaView>
+        <LinearGradient colors={['#b3e5fc', '#e1f5fe', '#ffffff']} style={styles.gradient}>
+          <SafeAreaView style={styles.container}>
+            <Text style={styles.title}>¡Game Over!</Text>
+            <Text style={styles.subtitle}>Puntaje: {score}</Text>
+            <Text style={styles.subtitle}>Tiempo: {time}s</Text>
+            <Text style={styles.subtitle}>Mejor: {best}</Text>
+
+            <TouchableOpacity style={styles.playButton} onPress={startGame}>
+              <Text style={styles.playButtonText}>🔁 Volver a jugar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.playButton, { backgroundColor: '#777', marginTop: 10 }]}
+              onPress={() => setScreen('menu')}
+            >
+              <Text style={styles.playButtonText}>🏠 Volver al inicio</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
+        </LinearGradient>
       </SafeAreaProvider>
     );
   }
@@ -336,122 +349,140 @@ export default function MiniGame() {
   return null;
 }
 
-// 🎨 Estilos
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#f0f4f3', 
-    alignItems: 'center', 
-    paddingTop: '5%' 
+  gradient: {
+    flex: 1,
   },
-  title: { 
-    fontSize: SCREEN_WIDTH * 0.08, 
-    fontWeight: '700', 
-    marginBottom: 8 
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  subtitle: { 
-    fontSize: SCREEN_WIDTH * 0.045, 
-    color: '#444', 
-    marginBottom: 12 
+  overlay: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  button: { 
-    marginTop: 12, 
-    backgroundColor: '#3b82f6', 
-    paddingVertical: 12, 
-    paddingHorizontal: 24, 
-    borderRadius: 8 
+  gameTitle: {
+    fontSize: SCREEN_WIDTH * 0.12,
+    fontWeight: '900',
+    color: '#0277bd',
+    textShadowColor: '#81d4fa',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 2,
+    marginBottom: 20,
   },
-  buttonText: { 
-    color: '#fff', 
-    fontWeight: '600' 
+  caterpieImage: {
+    width: 200,
+    height: 200,
+    marginVertical: 12,
   },
-  header: { 
-    fontSize: SCREEN_WIDTH * 0.045, 
-    marginBottom: 8, 
-    textAlign: 'center' 
+  playButton: {
+    marginTop: 20,
+    backgroundColor: '#0288d1',
+    paddingVertical: 16,
+    paddingHorizontal: 50,
+    borderRadius: 40,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 5,
+    elevation: 5,
   },
-  gameArea: { 
-    width: GAME_AREA_WIDTH, 
-    height: GAME_AREA_WIDTH, 
-    borderWidth: 2, 
-    borderColor: '#2e7d32', 
-    backgroundColor: '#a5d6a7', 
-    overflow: 'hidden', 
-    borderRadius: 8 
+  playButtonText: {
+    color: '#fff',
+    fontWeight: '800',
+    fontSize: SCREEN_WIDTH * 0.05,
+    textTransform: 'uppercase',
   },
-  row: { 
-    flexDirection: 'row' 
+  title: {
+    fontSize: SCREEN_WIDTH * 0.08,
+    fontWeight: '700',
+    marginBottom: 8,
   },
-  cell: { 
-    width: CELL_SIZE, 
-    height: CELL_SIZE, 
-    borderWidth: 0.5, 
-    borderColor: '#4caf50', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    backgroundColor: '#81c784' 
+  subtitle: {
+    fontSize: SCREEN_WIDTH * 0.045,
+    color: '#444',
+    marginBottom: 12,
   },
-  countdownOverlay: { 
-    position: 'absolute', 
-    top: 0, left: 0, 
-    width: '100%', 
-    height: '100%', 
-    backgroundColor: 'rgba(255,255,255,0.6)', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    zIndex: 10 
+  header: {
+    fontSize: SCREEN_WIDTH * 0.045,
+    marginBottom: 8,
+    textAlign: 'center',
   },
-  countdownText: { 
-    fontSize: SCREEN_WIDTH * 0.15, 
-    fontWeight: '800', 
-    color: '#1b5e20' 
+  gameArea: {
+    width: GAME_AREA_WIDTH,
+    height: GAME_AREA_WIDTH,
+    borderWidth: 2,
+    borderColor: '#2e7d32',
+    backgroundColor: '#a5d6a7',
+    overflow: 'hidden',
+    borderRadius: 8,
   },
-  dpadBase: { 
-    backgroundColor: '#cfcfcf', 
-    borderRadius: 100, 
-    width: SCREEN_WIDTH * 0.4, 
-    height: SCREEN_WIDTH * 0.4, 
-    marginTop: 16, 
-    alignItems: 'center', 
-    justifyContent: 'center' 
+  row: { flexDirection: 'row' },
+  cell: {
+    width: CELL_SIZE,
+    height: CELL_SIZE,
+    borderWidth: 0.5,
+    borderColor: '#4caf50',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#81c784',
   },
-  dpadCross: { 
-    position: 'relative', 
-    width: '90%', 
-    height: '90%', 
-    alignItems: 'center', 
-    justifyContent: 'center' 
+  countdownOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
   },
-  dpadButton: { 
-    position: 'absolute', 
-    width: SCREEN_WIDTH * 0.13, 
-    height: SCREEN_WIDTH * 0.13, 
-    backgroundColor: '#222', 
-    borderRadius: 16, 
-    alignItems: 'center', 
-    justifyContent: 'center' 
+  countdownText: {
+    fontSize: SCREEN_WIDTH * 0.15,
+    fontWeight: '800',
+    color: '#1b5e20',
   },
-  dpadUp: { 
-    top: 0 
-  }, 
-    dpadDown: { 
-      bottom: 0 
-    }, 
-    dpadLeft: { 
-      left: 0 
-    }, 
-    dpadRight: { 
-      right: 0 
-    },
-  dpadCenter: { 
-    width: SCREEN_WIDTH * 0.18, 
-    height: SCREEN_WIDTH * 0.18, 
-    backgroundColor: '#444', 
-    borderRadius: SCREEN_WIDTH * 0.09 
+  dpadBase: {
+    backgroundColor: '#cfcfcf',
+    borderRadius: 100,
+    width: SCREEN_WIDTH * 0.4,
+    height: SCREEN_WIDTH * 0.4,
+    marginTop: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  dpadArrow: { 
-    fontSize: SCREEN_WIDTH * 0.05, 
-    color: '#fff', 
-    fontWeight: 'bold' 
+  dpadCross: {
+    position: 'relative',
+    width: '90%',
+    height: '90%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dpadButton: {
+    position: 'absolute',
+    width: SCREEN_WIDTH * 0.13,
+    height: SCREEN_WIDTH * 0.13,
+    backgroundColor: '#222',
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dpadUp: { top: 0 },
+  dpadDown: { bottom: 0 },
+  dpadLeft: { left: 0 },
+  dpadRight: { right: 0 },
+  dpadCenter: {
+    width: SCREEN_WIDTH * 0.18,
+    height: SCREEN_WIDTH * 0.18,
+    backgroundColor: '#444',
+    borderRadius: SCREEN_WIDTH * 0.09,
+  },
+  dpadArrow: {
+    fontSize: SCREEN_WIDTH * 0.05,
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
