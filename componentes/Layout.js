@@ -10,7 +10,9 @@ import { Ionicons as Icons } from '@expo/vector-icons';
 const HeaderNav = () => {
   const navigation = useNavigation(); 
   return (
+    <LinearGradient colors={['#cc7b33', '#dba370', '#ffffff']} style={styles.gradient} >
     <View style={styles.headerNav}>
+      
        <TouchableOpacity style={styles.iconoL} onPress={() => navigation.navigate('Inicio')}>
        <Image source={require('../assets/WIMAMON.png')} style={{ width: 40, height: 40 }} />
       </TouchableOpacity>
@@ -19,6 +21,7 @@ const HeaderNav = () => {
         <Icons name="person-circle-outline" size={40} color="#000" />
       </TouchableOpacity>
     </View>
+      </LinearGradient>
   );
 };
 
@@ -30,11 +33,11 @@ const Header = ({label}) => (
 );
 // Body 
 const Body = ({ children }) => (
-  <LinearGradient colors={['#b3e5fc', '#e1f5fe', '#ffffff']} style={styles.gradient}>
+ 
   <View style={[styles.body, { flex: 1, width: '100%' }]}>
     {children}
   </View>
-  </LinearGradient>
+
 );
 const FooterButton = ({ icon, label, onPress }) => (
   <TouchableOpacity style={styles.footerButton} onPress={onPress}>
@@ -78,8 +81,11 @@ export default function Layout({ header, children, navigation }) {
 
 const styles = StyleSheet.create({
  gradient: {
-    flex: 1,
+   height: 60,
+   width: '100%',
+  justifyContent: 'space-between',
   },
+
 container: {
     flex: 1, 
     backgroundColor: '#f5f5f5',
@@ -94,7 +100,6 @@ header: {
 
 headerNav: {
     height: 60,
-    backgroundColor: '#a3a2a2',
     flexDirection: 'row',       
     justifyContent: 'space-between',
     alignItems: 'center', 
