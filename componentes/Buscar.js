@@ -1,13 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
-import {StyleSheet, FlatList, ActivityIndicator, TextInput, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, FlatList, ActivityIndicator, TextInput, View, Text, TouchableOpacity } from 'react-native';
 import { useState, useEffect } from 'react';
 import { PokemonCard } from './PokemonCard';
-import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { Ionicons as Icons } from '@expo/vector-icons';
-import Layout from './Layout';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import Layout from './Layout';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 function Buscar({ navigation }) {
   const [pokemon, setPokemon] = useState([]);
@@ -18,9 +15,9 @@ function Buscar({ navigation }) {
   const [searchResult, setSearchResult] = useState(null);
   const [error, setError] = useState('');
 
-  // Cargar lista 
+  // 🔹 Cargar los primeros 20 Pokémon
   useEffect(() => {
-    fetch('https://pokeapi.co/api/v2/pokemon/')
+    fetch('https://pokeapi.co/api/v2/pokemon?limit=20&offset=0')
       .then(res => res.json())
       .then(data => {
         setPokemon(data.results);
@@ -29,10 +26,9 @@ function Buscar({ navigation }) {
       .catch(error => console.error('Error al cargar Pokémon:', error));
   }, []);
 
-  // Cargar más
+  // 🔹 Cargar más Pokémon (otros 20)
   const loadMore = () => {
     if (isLoadingMore || !next || isSearching) return;
-
     setIsLoadingMore(true);
 
     fetch(next)
@@ -45,7 +41,7 @@ function Buscar({ navigation }) {
       .finally(() => setIsLoadingMore(false));
   };
 
-  // Buscar Pokémon por nombre
+  // 🔹 Buscar Pokémon por nombre
   const handleSearch = async () => {
     if (!searchText.trim()) {
       setIsSearching(false);
@@ -53,7 +49,7 @@ function Buscar({ navigation }) {
       setError('');
       return;
     }
-    
+
     setIsSearching(true);
     setError('');
     try {
@@ -68,30 +64,34 @@ function Buscar({ navigation }) {
       setIsSearching(false);
     }
   };
+
+  // 🔹 Buscar automáticamente mientras escribe (debounce)
   useEffect(() => {
-  const timeout = setTimeout(() => handleSearch(), 600);
-  return () => clearTimeout(timeout);
+    const timeout = setTimeout(() => handleSearch(), 600);
+    return () => clearTimeout(timeout);
   }, [searchText]);
 
   return (
-    
-       <Layout header="Pokédex" navigation={navigation} >
-        <LinearGradient colors={['#b3e5fc', '#e1f5fe', '#ffffff']} style={styles.gradient}>
+    <Layout header="Pokédex" navigation={navigation}>
+      <LinearGradient colors={['#b3e5fc', '#e1f5fe', '#ffffff']} style={styles.gradient}>
+        {/* Buscador */}
         <View style={styles.searchContainer}>
-      <TextInput
-        style={styles.input}
-        placeholder="Buscar Pokémon"
-        value={searchText}
-        onChangeText={setSearchText}
-        onSubmitEditing={handleSearch}
-        returnKeyType="search"
-      />
-
-      <TouchableOpacity style={styles.iconContainer} onPress={handleSearch}>
-        <Icon name="search" size={22} color="#092891ff" />
-      </TouchableOpacity>
+          <TextInput
+            style={styles.input}
+            placeholder="Buscar Pokémon"
+            value={searchText}
+            onChangeText={setSearchText}
+            onSubmitEditing={handleSearch}
+            returnKeyType="search"
+          />
+          <TouchableOpacity style={styles.iconContainer} onPress={handleSearch}>
+            <Icon name="search" size={22} color="#092891ff" />
+          </TouchableOpacity>
         </View>
+
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+        {/* Lista de Pokémon */}
         <FlatList
           data={searchResult || pokemon}
           keyExtractor={(item, index) => `${item.name}-${index}`}
@@ -100,17 +100,24 @@ function Buscar({ navigation }) {
           )}
           numColumns={2}
           columnWrapperStyle={styles.row}
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={() =>
-            isLoadingMore && !searchResult ? (
-              <ActivityIndicator size="large" color="#000" />
+          ListFooterComponent={() => (
+            !isSearching && !searchResult ? (
+              <View style={styles.footer}>
+                {isLoadingMore ? (
+                  <ActivityIndicator size="large" color="#092891ff" />
+                ) : (
+                  next && (
+                    <TouchableOpacity style={styles.loadMoreBtn} onPress={loadMore}>
+                      <Text style={styles.loadMoreText}>Cargar más</Text>
+                    </TouchableOpacity>
+                  )
+                )}
+              </View>
             ) : null
-          }
-          
+          )}
         />
-        </LinearGradient>
-      </Layout>
+      </LinearGradient>
+    </Layout>
   );
 }
 
@@ -118,11 +125,7 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 1,
   },
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-   searchContainer: {
+  searchContainer: {
     position: "relative",
     margin: 10,
   },
@@ -130,7 +133,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 10,
     paddingVertical: 8,
-    paddingHorizontal: 40, 
+    paddingHorizontal: 40,
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#092891ff",
@@ -141,18 +144,6 @@ const styles = StyleSheet.create({
     top: "50%",
     transform: [{ translateY: -10 }],
   },
-   headerNav: {
-    height: 60,
-    backgroundColor: '#a3a2a2',
-    flexDirection: 'row',       
-    justifyContent: 'flex-end',  
-    alignItems: 'center', 
-    paddingHorizontal: 15,
-  },
-  iconoU: {
-  justifyContent: 'center',
-  alignItems: 'center',
-  },
   errorText: {
     color: 'red',
     textAlign: 'center',
@@ -160,6 +151,21 @@ const styles = StyleSheet.create({
   },
   row: {
     justifyContent: 'space-around',
+  },
+  footer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  loadMoreBtn: {
+    backgroundColor: '#092891ff',
+    borderRadius: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  loadMoreText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 

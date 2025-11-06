@@ -19,6 +19,8 @@ export default function PokemonDetail({ route }) {
   const { pokemon } = route.params;
   const [weaknesses, setWeaknesses] = useState([]);
   const [loadingWeaknesses, setLoadingWeaknesses] = useState(true);
+  const [recommended, setRecommended] = useState([]);
+  const [loadingRecommended, setLoadingRecommended] = useState(true);
 
   const typeColors = {
     fire: '#F08030', water: '#6890F0', grass: '#78C850', electric: '#F8D030',
@@ -39,6 +41,7 @@ export default function PokemonDetail({ route }) {
     }).start();
   }, []);
 
+  // === Cargar debilidades ===
   useEffect(() => {
     const fetchWeaknesses = async () => {
       try {
@@ -57,6 +60,50 @@ export default function PokemonDetail({ route }) {
     };
     fetchWeaknesses();
   }, [pokemon]);
+
+  // === Cargar Pokémon recomendados ===
+  useEffect(() => {
+    const fetchRecommended = async () => {
+      try {
+        if (weaknesses.length === 0) return;
+
+        const randomWeaknesses = weaknesses.slice(0, 3); // Tomar hasta 3 tipos débiles
+        const pokemonsSet = new Set();
+        const results = [];
+
+        for (const type of randomWeaknesses) {
+          const res = await fetch(`https://pokeapi.co/api/v2/type/${type}`);
+          const data = await res.json();
+          const strongPokemons = data.pokemon.slice(0, 10); // Tomamos 10 pokémon por tipo
+          for (const p of strongPokemons) {
+            pokemonsSet.add(p.pokemon.name);
+          }
+        }
+
+        const uniquePokemons = Array.from(pokemonsSet)
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 3);
+
+        for (const name of uniquePokemons) {
+          const pokeRes = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+          const pokeData = await pokeRes.json();
+          results.push({
+            name: pokeData.name,
+            types: pokeData.types.map(t => t.type.name),
+            image: pokeData.sprites.other['official-artwork'].front_default,
+          });
+        }
+
+        setRecommended(results);
+      } catch (err) {
+        console.error('Error al obtener recomendados:', err);
+      } finally {
+        setLoadingRecommended(false);
+      }
+    };
+
+    fetchRecommended();
+  }, [weaknesses]);
 
   return (
     <SafeAreaProvider>
@@ -141,6 +188,35 @@ export default function PokemonDetail({ route }) {
               </View>
             )}
           </View>
+
+          {/* Pokémon recomendados */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Pokémon recomendados</Text>
+            {loadingRecommended ? (
+              <ActivityIndicator size="small" color={mainColor} />
+            ) : recommended.length > 0 ? (
+              <View style={styles.recommendedContainer}>
+                {recommended.map((r) => (
+                  <View key={r.name} style={styles.recommendedCard}>
+                    <Image source={{ uri: r.image }} style={styles.recommendedImage} />
+                    <Text style={styles.recommendedName}>{r.name.toUpperCase()}</Text>
+                    <View style={styles.typeContainer}>
+                      {r.types.map((t) => (
+                        <View
+                          key={t}
+                          style={[styles.typeBadge, { backgroundColor: typeColors[t] || '#999' }]}
+                        >
+                          <Text style={styles.typeText}>{t.toUpperCase()}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <Text style={styles.text}>No se encontraron recomendaciones.</Text>
+            )}
+          </View>
         </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -195,4 +271,31 @@ const styles = StyleSheet.create({
   },
   skillText: { color: '#333', fontWeight: 'bold', fontSize: 12, textAlign: 'center' },
   text: { fontSize: 14, color: '#444', marginVertical: 2 },
+
+  // --- Estilos recomendados ---
+  recommendedContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    flexWrap: 'wrap',
+  },
+  recommendedCard: {
+    alignItems: 'center',
+    backgroundColor: '#fefefe',
+    borderRadius: 14,
+    padding: 10,
+    margin: 5,
+    width: width * 0.42,
+    elevation: 3,
+  },
+  recommendedImage: {
+    width: 90,
+    height: 90,
+    resizeMode: 'contain',
+  },
+  recommendedName: {
+    fontWeight: 'bold',
+    fontSize: 14,
+    color: '#333',
+    marginTop: 4,
+  },
 });
