@@ -10,7 +10,7 @@ import { Ionicons as Icons } from '@expo/vector-icons';
 const HeaderNav = () => {
   const navigation = useNavigation(); 
   return (
-    <LinearGradient colors={['#cc7b33', '#dba370', '#ffffff']} style={styles.gradient} >
+    <LinearGradient colors={['#3384cc', '#3384cc']} style={styles.gradient} >
     <View style={styles.headerNav}>
       
        <TouchableOpacity style={styles.iconoL} onPress={() => navigation.navigate('Inicio')}>
